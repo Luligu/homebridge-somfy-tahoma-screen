@@ -1,5 +1,5 @@
 {
-  "pluginAlias": "ExampleHomebridgePlugin",
+  "pluginAlias": "Somfy TaHoma Screen",
   "pluginType": "platform",
   "singular": true,
   "schema": {
@@ -9,7 +9,49 @@
         "title": "Name",
         "type": "string",
         "required": true,
-        "default": "Example Dynamic Platform"
+        "default": "Somfy TaHoma Screen"
+      },
+      "service": {
+        "title": "TaHoma service",
+        "type": "string",
+        "required": true,
+        "default": "somfy_europe",
+        "oneOf": [
+          {
+            "title": "Local API (TaHoma / Switch)",
+            "enum": [
+              "local"
+            ]
+          },
+          {
+            "title": "Somfy Europe (TaHoma / Switch / Connexoon IO)",
+            "enum": [
+              "somfy_europe"
+            ]
+          },
+          {
+            "title": "Somfy Australia (Connexoon RTS)",
+            "enum": [
+              "somfy_australia"
+            ]
+          },
+          {
+            "title": "Somfy North America",
+            "enum": [
+              "somfy_north_america"
+            ]
+          }
+        ]
+      },
+      "username": {
+        "title": "TaHoma account username",
+        "type": "string",
+        "required": true
+      },
+      "password": {
+        "title": "TaHoma account password",
+        "type": "string",
+        "required": true
       }
     }
   }

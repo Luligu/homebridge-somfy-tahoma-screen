@@ -1,19 +1,23 @@
-import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, Service, Characteristic } from 'homebridge';
-
+import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, Service, Characteristic, Categories, CharacteristicValue,
+  CharacteristicSetCallback } from 'homebridge';
+import { CharacteristicChange, CharacteristicGetCallback, HAPStatus } from 'hap-nodejs';
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
-import { ExamplePlatformAccessory } from './platformAccessory';
+import { Action, Client, Command, Device, Execution } from 'overkiz-client';
+import { hostname } from 'os';
+import { HoldPosition, MoveToPosition, TaHomaCharacteristic, addCharacteristic, createServiceAccessoryInformation, createServiceWindowCovering} from './hapCustom';
+import { NodeStorageManager } from 'node-storage-manager';
+import path from 'path';
 
-/**
- * HomebridgePlatform
- * This class is the main constructor for your plugin, this is where you should
- * parse the user config and discover/register accessories with Homebridge.
- */
-export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
+export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
   public readonly Service: typeof Service = this.api.hap.Service;
   public readonly Characteristic: typeof Characteristic = this.api.hap.Characteristic;
-
-  // this is used to track restored cached accessories
   public readonly accessories: PlatformAccessory[] = [];
+
+  // NodeStorageManager
+  nodeStorageManager: NodeStorageManager;
+
+  // TaHoma
+  tahomaClient: Client;
 
   constructor(
     public readonly log: Logger,
@@ -22,95 +26,162 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
   ) {
     this.log.debug('Finished initializing platform:', this.config.name);
 
-    // When this event is fired it means Homebridge has restored all cached accessories from disk.
-    // Dynamic Platform plugins should only register new accessories after this event was fired,
-    // in order to ensure they weren't added to homebridge already. This event can also be used
-    // to start discovery of new accessories.
+    // create NodeStorageManager
+    this.nodeStorageManager = new NodeStorageManager({dir: path.join(this.api.user.storagePath(), 'homebridge-somfy-tahoma-screen'), logging: true});
+
+    // create TaHoma client
+    this.tahomaClient = new Client(this.log, { service: this.config.service, user: this.config.username, password: this.config.password });
+
+    this.tahomaClient.on('connect', () => {
+      this.log.info('TaHoma service connected');
+    });
+
+    this.tahomaClient.on('disconnect', () => {
+      this.log.warn('TaHoma service disconnected');
+    });
+
     this.api.on('didFinishLaunching', () => {
       log.debug('Executed didFinishLaunching callback');
-      // run the method to discover / register your devices as accessories
-      this.discoverDevices();
+
+      //this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, this.accessories);
+      setTimeout( () => {
+        //this.accessories.splice(0);
+        this.discoverDevices();
+      }, 1000);
     });
   }
 
-  /**
-   * This function is invoked when homebridge restores cached accessories from disk at startup.
-   * It should be used to setup event handlers for characteristics and update respective values.
-   */
   configureAccessory(accessory: PlatformAccessory) {
     this.log.info('Loading accessory from cache:', accessory.displayName);
 
-    // add the restored accessory to the accessories cache so we can track if it has already been registered
     this.accessories.push(accessory);
   }
 
-  /**
-   * This is an example method showing how to register discovered accessories.
-   * Accessories must only be registered once, previously created accessories
-   * must not be registered again to prevent "duplicate UUID" errors.
-   */
-  discoverDevices() {
+  async discoverDevices() {
+    const blindDevices: Device[] = [];
 
-    // EXAMPLE ONLY
-    // A real plugin you would discover accessories from the local network, cloud services
-    // or a user-defined array in the platform config.
-    const exampleDevices = [
-      {
-        exampleUniqueId: 'ABCD',
-        exampleDisplayName: 'Bedroom',
-      },
-      {
-        exampleUniqueId: 'EFGH',
-        exampleDisplayName: 'Kitchen',
-      },
-    ];
+    // TaHoma
+    await this.tahomaClient.connect(this.config.username, this.config.password);
+    const devices = await this.tahomaClient.getDevices();
+    this.log.info('TaHoma', devices.length, 'devices discovered');
 
-    // loop over the discovered devices and register each one if it has not already been registered
-    for (const device of exampleDevices) {
-
-      // generate a unique id for the accessory this should be generated from
-      // something globally unique, but constant, for example, the device serial
-      // number or MAC address
-      const uuid = this.api.hap.uuid.generate(device.exampleUniqueId);
-
-      // see if an accessory with the same uuid has already been registered and restored from
-      // the cached devices we stored in the `configureAccessory` method above
+    for (const device of devices) {
+      this.log.debug(`Device: ${device.label} uiClass ${device.definition.uiClass} serial ${device.serialNumber}`);
+      this.log.debug(`Commands for ${device.deviceURL}:`, JSON.stringify(device.commands));
+      if (device.uniqueName === 'Blind') {
+        blindDevices.push(device);
+      }
+    }
+    this.log.info('TaHoma', blindDevices.length, 'screens discovered');
+    for (const device of blindDevices) {
+      this.log.debug(`Adding device: ${device.label} uiClass ${device.definition.uiClass} serial ${device.serialNumber}`);
+      const uuid = this.api.hap.uuid.generate(device.serialNumber+hostname);
       const existingAccessory = this.accessories.find(accessory => accessory.UUID === uuid);
 
       if (existingAccessory) {
-        // the accessory already exists
+
         this.log.info('Restoring existing accessory from cache:', existingAccessory.displayName);
 
-        // if you need to update the accessory.context then you should run `api.updatePlatformAccessories`. eg.:
-        // existingAccessory.context.device = device;
-        // this.api.updatePlatformAccessories([existingAccessory]);
+        await this.setupAccessory(existingAccessory, device);
 
-        // create the accessory handler for the restored accessory
-        // this is imported from `platformAccessory.ts`
-        new ExamplePlatformAccessory(this, existingAccessory);
-
-        // it is possible to remove platform accessories at any time using `api.unregisterPlatformAccessories`, eg.:
-        // remove platform accessories when no longer present
-        // this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [existingAccessory]);
-        // this.log.info('Removing existing accessory from cache:', existingAccessory.displayName);
       } else {
-        // the accessory does not yet exist, so we need to create it
-        this.log.info('Adding new accessory:', device.exampleDisplayName);
 
-        // create a new accessory
-        const accessory = new this.api.platformAccessory(device.exampleDisplayName, uuid);
+        this.log.info('Adding new accessory:', device.label);
 
-        // store a copy of the device object in the `accessory.context`
-        // the `context` property can be used to store any data about the accessory you may need
-        accessory.context.device = device;
+        const accessory = new this.api.platformAccessory(device.label, uuid, Categories.WINDOW_COVERING);
 
-        // create the accessory handler for the newly create accessory
-        // this is imported from `platformAccessory.ts`
-        new ExamplePlatformAccessory(this, accessory);
+        await this.setupAccessory(accessory, device);
 
-        // link the accessory to your platform
         this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
       }
     }
   }
+
+  async setupAccessory(platformAccessory: PlatformAccessory, device: Device) {
+    const Service = this.api.hap.Service;
+    const Characteristic = this.api.hap.Characteristic;
+    const accessory = platformAccessory._associatedHAPAccessory;
+
+    const deviceStorage = await this.nodeStorageManager.createStorage(device.label);
+    let windowCoveringCurrentPosition = await deviceStorage.get<number>('currentPosition', 100);
+    let windowCoveringTargetPosition = await deviceStorage.get<number>('currentPosition', 100);
+    createServiceAccessoryInformation(accessory, device.label,
+      { manufacturer: 'Somfy-TaHoma', model: device.definition.uiClass, serialNumber: device.serialNumber+hostname });
+    createServiceWindowCovering(accessory, device.label, {
+      currentPosition: windowCoveringCurrentPosition, targetPosition: windowCoveringTargetPosition, positionState: Characteristic.PositionState.STOPPED,
+      obstructionDetected: false, holdPosition: false, statusActive: true, statusFault: Characteristic.StatusFault.NO_FAULT, primary: true, nodeStorage: deviceStorage,
+      onChangeCurrentPosition: async (change: CharacteristicChange) => {
+        windowCoveringCurrentPosition = change.newValue as number;
+        await deviceStorage.set<number>('currentPosition', windowCoveringCurrentPosition);
+        this.log.debug('onChangeCurrentPosition', device.label, change.reason, change.oldValue, change.newValue);
+      },
+      onGetCurrentPosition: (callback: CharacteristicGetCallback) => {
+        this.log.debug('onGetCurrentPosition', device.label, windowCoveringCurrentPosition);
+        callback(HAPStatus.SUCCESS, windowCoveringCurrentPosition);
+      },
+      onSetTargetPosition: (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
+        this.log.debug('onSetTargetPosition', device.label, windowCoveringTargetPosition = value as number);
+        MoveToPosition(accessory.getService(Service.WindowCovering)!, windowCoveringTargetPosition, 26, (command) => this.sendCommand(command, device, true));
+        callback(HAPStatus.SUCCESS);
+      },
+      onSetHoldPosition: (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
+        this.log.debug('onSetHoldPosition', device.label);
+        windowCoveringCurrentPosition = accessory.getService(Service.WindowCovering)!.getCharacteristic(Characteristic.CurrentPosition).value as number;
+        HoldPosition(accessory.getService(Service.WindowCovering)!, windowCoveringCurrentPosition, (command) => this.sendCommand(command, device, true));
+        callback(HAPStatus.SUCCESS);
+      },
+    });
+    addCharacteristic(accessory, Service.WindowCovering, TaHomaCharacteristic.TaHomaUpButton, {
+      value: false, onSet: (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
+        callback(HAPStatus.SUCCESS);
+        if (value === true) {
+          accessory.getService(Service.WindowCovering)?.setCharacteristic(Characteristic.TargetPosition, 100);
+          accessory.getService(Service.WindowCovering)?.setCharacteristic(TaHomaCharacteristic.TaHomaUpButton, false);
+        }
+      },
+    });
+    addCharacteristic(accessory, Service.WindowCovering, TaHomaCharacteristic.TaHomaMyButton, {
+      value: false, onSet: (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
+        callback(HAPStatus.SUCCESS);
+        if (value === true) {
+          accessory.getService(Service.WindowCovering)?.setCharacteristic(Characteristic.TargetPosition, 50);
+          accessory.getService(Service.WindowCovering)?.setCharacteristic(TaHomaCharacteristic.TaHomaMyButton, false);
+        }
+      },
+    });
+    addCharacteristic(accessory, Service.WindowCovering, TaHomaCharacteristic.TaHomaDownButton, {
+      value: false, onSet: (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
+        callback(HAPStatus.SUCCESS);
+        if (value === true) {
+          accessory.getService(Service.WindowCovering)?.setCharacteristic(Characteristic.TargetPosition, 0);
+          accessory.getService(Service.WindowCovering)?.setCharacteristic(TaHomaCharacteristic.TaHomaDownButton, false);
+        }
+      },
+    });
+    addCharacteristic(accessory, Service.WindowCovering, TaHomaCharacteristic.TaHomaMyDuration, {
+      nodeStorage: deviceStorage, storageKey: 'TaHomaMyDuration', storageDefaultValue: 15,
+      onSet: async (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
+        callback(HAPStatus.SUCCESS);
+        await deviceStorage.set('TaHomaMyDuration', value);
+      },
+    });
+    addCharacteristic(accessory, Service.WindowCovering, TaHomaCharacteristic.TaHomaDuration, {
+      nodeStorage: deviceStorage, storageKey: 'TaHomaDuration', storageDefaultValue: 26,
+      onSet: async (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
+        callback(HAPStatus.SUCCESS);
+        await deviceStorage.set('TaHomaDuration', value);
+      },
+    });
+
+    //const windowCoveringHistory = new HapHistory(log, accessory, { enableAutopilot: true, enableConfigData: true, filePath: './persist' });
+  }
+
+  sendCommand(command: string, device: Device, highPriority = false) {
+    this.log.debug(`*Sending command ${command} highPriority ${highPriority}`);
+    const _command = new Command(command);
+    const _action = new Action(device.deviceURL, [_command]);
+    const _execution = new Execution('Sending ' + command, _action);
+    this.tahomaClient.execute(highPriority ? 'apply/highPriority' : 'apply', _execution);
+  }
+
 }
