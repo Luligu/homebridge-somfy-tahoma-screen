@@ -27,7 +27,7 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
     this.log.debug('Finished initializing platform:', this.config.name);
 
     // create NodeStorageManager
-    this.nodeStorageManager = new NodeStorageManager({dir: path.join(this.api.user.storagePath(), 'homebridge-somfy-tahoma-screen'), logging: true});
+    this.nodeStorageManager = new NodeStorageManager({dir: path.join(this.api.user.storagePath(), 'homebridge-somfy-tahoma-screen'), logging: false});
 
     // create TaHoma client
     this.tahomaClient = new Client(this.log, { service: this.config.service, user: this.config.username, password: this.config.password });
