@@ -1,10 +1,10 @@
 /**
  * This file contains the functions stringify.
  *
- * @file platformAccessoryDevices.ts
+ * @file stringify.ts
  * @author Luca Liguori
  * @date 2023-07-23
- * @version 1.3.7
+ * @version 1.4.1
  *
  * All rights reserved.
  *
@@ -12,6 +12,22 @@
 
 export function payloadStringify(payload: object): string {
   return stringify(payload, false, 0, 0, 0, 0, 0, 0, '"', '"');
+}
+
+export function colorStringify(payload: object): string {
+  return stringify(payload, true, 255, 255, 35, 220, 159, 1);
+}
+
+export function historyStringify(payload: object): string {
+  return stringify(payload, true, 0, 208, 247, 247, 247, 247);
+}
+
+export function mqttStringify(payload: object): string {
+  return stringify(payload, true, 69, 247);
+}
+
+export function debugStringify(payload: object): string {
+  return stringify(payload, true, 247, 247);
 }
 
 export function stringify(payload: object, enableColors = false, colorPayload = 255, colorKey = 255, colorString = 35, colorNumber = 220,
@@ -31,7 +47,9 @@ export function stringify(payload: object, enableColors = false, colorPayload = 
     let newValue = '';
     newValue = value;
     //console.log(typeof newValue, key, value);
-    if (typeof newValue === 'string') {
+    if (value === null) {
+      newValue = `${clr(colorUndefined)}null${reset()}`;
+    } else if (typeof newValue === 'string') {
       newValue = `${clr(colorString)}${stringQuote}${newValue}${stringQuote}${reset()}`;
     } else if (typeof newValue === 'number') {
       newValue = `${clr(colorNumber)}${newValue}${reset()}`;

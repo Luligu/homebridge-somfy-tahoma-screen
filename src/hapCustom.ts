@@ -4,7 +4,7 @@
  * @file hapCustom.ts
  * @author Luca Liguori
  * @date 2023-11-13
- * @version 1.0.6
+ * @version 1.0.7
  *
  * All rights reserved.
  *
@@ -34,7 +34,7 @@ import {
 import * as crypto from 'crypto';
 import { EventEmitter } from 'events';
 import { CustomLogger, db, dn, er, hk, id, rk, rs, wr, zb } from './customLogger.js';
-import { stringify } from './stringify.js';
+import { debugStringify } from './stringify.js';
 import { NodeStorage, NodeStorageKey } from 'node-storage-manager';
 
 export const HapCategoryNames: { [key: number]: string } = {
@@ -1062,7 +1062,7 @@ export function logAccessory(accessory: Accessory, log: CustomLogger) {
     // eslint-disable-next-line max-len
     log.debug(`==> ${zb}${service.constructor.name}${rs}${db} name ${hk}${service.name}${db} display ${hk}${service.displayName}${db} subtype ${hk}${service.subtype}${db} iid ${hk}${service.iid}${db} uuid ${hk}${service.UUID.slice(0, 8)}${db} ${service.isHiddenService === true ? `${wr}hidden${db}` : ''} ${service.isPrimaryService === true ? `${wr}primary${db}` : ''}`);
     for (const characteristic of service.characteristics) {
-      const propsstring = stringify(characteristic.props, true, 247, 247);
+      const propsstring = debugStringify(characteristic.props);
       // eslint-disable-next-line max-len
       log.debug(`====> ${dn}${characteristic.constructor.name}-${characteristic.displayName}${db} value ${hk}${characteristic.value}${db} props ${hk}${propsstring}${db} iid ${hk}${characteristic.iid}${db} uuid ${hk}${characteristic.UUID.slice(0, 8)}${db}`);
     }

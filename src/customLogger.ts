@@ -56,10 +56,16 @@
 export const RESET = '\x1b[0m';
 export const BRIGHT = '\x1b[1m';
 export const DIM = '\x1b[2m';
-export const UNDERSCORE = '\x1b[4m';
+export const UNDERLINE = '\x1b[4m';
+export const UNDERLINEOFF = '\x1b[24m';
 export const BLINK = '\x1b[5m';
+export const BLINKOFF = '\x1b[25m';
 export const REVERSE = '\x1b[7m';
+export const REVERSEOFF = '\x1b[27m';
 export const HIDDEN = '\x1b[8m';
+export const HIDDENOFF = '\x1b[28m';
+export const CURSORSAVE = '\x1b[s';
+export const CURSORRESTORE = '\x1b[u';
 
 export const BLACK = '\x1b[30m';
 export const RED = '\x1b[31m';
@@ -74,10 +80,10 @@ export const WHITE = '\x1b[97m';
 
 export const ts = '\x1b[38;5;249m';                 // TimeStamp  White medium
 export const ln = '\x1b[38;5;31m';                  // LogName    Cyan
-export const s1ln = '\x1b[38;5;255;48;5;31m';       // Highlight  LogName White on Cyan
-export const s2ln = '\x1b[38;5;255;48;5;255m';      // Highlight  LogName White on White
-export const s3ln = '\x1b[38;5;255;48;5;220m';      // Highlight  LogName White on Yellow
-export const s4ln = '\x1b[38;5;255;48;5;9m';        // Highlight  LogName White on Red
+export const s1ln = '\x1b[38;5;0;48;5;31m';         // Highlight  LogName Black on Cyan
+export const s2ln = '\x1b[38;5;0;48;5;255m';        // Highlight  LogName Black on White
+export const s3ln = '\x1b[38;5;0;48;5;220m';        // Highlight  LogName Black on Yellow
+export const s4ln = '\x1b[38;5;0;48;5;9m';          // Highlight  LogName Black on Red
 
 export const db = '\x1b[38;5;247m';                 // Debug
 export const nf = '\x1b[38;5;255m';                 // Info
@@ -98,7 +104,7 @@ export const hk = '\x1b[38;5;79m';                  // Homekit
 
 export const pl = '\x1b[32m';                       // payload
 export const id = '\x1b[37;44m';                    // id or ieee_address or UUID
-export const or = '\x1b[38;2;255;126;00m';          // history
+export const or = '\x1b[38;5;208m';                 // history
 
 export const enum LogLevel {
   INFO = 'info',
