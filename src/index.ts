@@ -1,5 +1,4 @@
 import { API } from 'homebridge';
-
 import { PLATFORM_NAME } from './settings.js';
 import { SomfyTaHomaBridgePlatform } from './platform.js';
 
