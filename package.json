@@ -16,6 +16,7 @@
     "node": "^18.17.0 || ^20.9.0",
     "homebridge": "^1.7.0"
   },
+  "type": "module",
   "main": "dist/index.js",
   "scripts": {
     "lint": "eslint src/**.ts --max-warnings=0",
