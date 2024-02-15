@@ -8,7 +8,7 @@
   "parserOptions": {
     "ecmaVersion": "latest",
     "sourceType": "module",
-    "project": "./tsconfig.json" // Connect ESLint to TypeScript config
+    "project": "./tsconfig.json"
   },
   "rules": {
     "quotes": ["warn", "single"],

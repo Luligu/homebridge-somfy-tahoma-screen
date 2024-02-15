@@ -119,9 +119,10 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
         this.log.debug('onGetCurrentPosition', device.label, windowCoveringCurrentPosition);
         callback(HAPStatus.SUCCESS, windowCoveringCurrentPosition);
       },
-      onSetTargetPosition: (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
+      onSetTargetPosition: async (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
         this.log.debug('onSetTargetPosition', device.label, windowCoveringTargetPosition = value as number);
-        MoveToPosition(accessory.getService(Service.WindowCovering)!, windowCoveringTargetPosition, 26, (command) => this.sendCommand(command, device, true));
+        MoveToPosition(accessory.getService(Service.WindowCovering)!, windowCoveringTargetPosition, await deviceStorage.get<number>('TaHomaDuration', 26),
+          (command) => this.sendCommand(command, device, true));
         callback(HAPStatus.SUCCESS);
       },
       onSetHoldPosition: (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
@@ -159,17 +160,17 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
       },
     });
     addCharacteristic(accessory, Service.WindowCovering, TaHomaCharacteristic.TaHomaMyDuration, {
-      nodeStorage: deviceStorage, storageKey: 'TaHomaMyDuration', storageDefaultValue: 15,
+      nodeStorage: deviceStorage, storageKey: 'TaHomaMyDuration', storageDefaultValue: 12,
       onSet: async (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
         callback(HAPStatus.SUCCESS);
-        await deviceStorage.set('TaHomaMyDuration', value);
+        await deviceStorage.set<number>('TaHomaMyDuration', value as number);
       },
     });
     addCharacteristic(accessory, Service.WindowCovering, TaHomaCharacteristic.TaHomaDuration, {
       nodeStorage: deviceStorage, storageKey: 'TaHomaDuration', storageDefaultValue: 26,
       onSet: async (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
         callback(HAPStatus.SUCCESS);
-        await deviceStorage.set('TaHomaDuration', value);
+        await deviceStorage.set<number>('TaHomaDuration', value as number);
       },
     });
 

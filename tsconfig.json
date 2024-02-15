@@ -3,13 +3,16 @@
     "module": "nodenext",
     "target": "esnext",
     "moduleResolution": "nodenext",
+    "outDir": "./dist",
+    "rootDir": "./src",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "strict": true,
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true, 
+    "strict": true,
     "noImplicitAny": true
   }
 }
