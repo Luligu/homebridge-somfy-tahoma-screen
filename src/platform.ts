@@ -1,16 +1,16 @@
-import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, Service, Characteristic, Categories, CharacteristicValue,
+import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, Categories, CharacteristicValue,
   CharacteristicSetCallback } from 'homebridge';
 import { CharacteristicChange, CharacteristicGetCallback, HAPStatus } from 'hap-nodejs';
-import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
+import { PLATFORM_NAME, PLUGIN_NAME } from './settings.js';
 import { Action, Client, Command, Device, Execution } from 'overkiz-client';
 import { hostname } from 'os';
-import { HoldPosition, MoveToPosition, TaHomaCharacteristic, addCharacteristic, createServiceAccessoryInformation, createServiceWindowCovering} from './hapCustom';
+import { HoldPosition, MoveToPosition, TaHomaCharacteristic, addCharacteristic, createServiceAccessoryInformation, createServiceWindowCovering} from './hapCustom.js';
 import { NodeStorageManager } from 'node-storage-manager';
 import path from 'path';
 
+// npm link node-storage-manager
+
 export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
-  public readonly Service: typeof Service = this.api.hap.Service;
-  public readonly Characteristic: typeof Characteristic = this.api.hap.Characteristic;
   public readonly accessories: PlatformAccessory[] = [];
 
   // NodeStorageManager

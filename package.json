@@ -2,7 +2,7 @@
   "private": true,
   "displayName": "Somfy TaHoma Screen",
   "name": "homebridge-somfy-tahoma-screen",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Somfy TaHoma stateless screens plugin",
   "license": "Apache-2.0",
   "repository": {
@@ -20,6 +20,7 @@
   "main": "dist/index.js",
   "scripts": {
     "lint": "eslint src/**.ts --max-warnings=0",
+    "lint:fix": "eslint src/**.ts --fix",
     "watch": "npm run cleanBuild && npm link && nodemon",
     "build": "rimraf ./dist && tsc",
     "clean": "rimraf ./dist",
@@ -38,11 +39,10 @@
     "Blind"
   ],
   "dependencies": {
-    "node-storage-manager": "file:../node-storage-manager",
     "overkiz-client": "^1.0.18"
   },
   "devDependencies": {
-    "@types/node": "^20.11.17",
+    "@types/node": "^20.11.18",
     "@types/node-persist": "^3.1.8",
     "@typescript-eslint/eslint-plugin": "^7.0.1",
     "@typescript-eslint/parser": "^7.0.1",

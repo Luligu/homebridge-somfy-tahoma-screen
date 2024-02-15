@@ -6,12 +6,10 @@
     "plugin:@typescript-eslint/recommended" 
   ],
   "parserOptions": {
-    "ecmaVersion": 2018,
-    "sourceType": "module"
+    "ecmaVersion": "latest",
+    "sourceType": "module",
+    "project": "./tsconfig.json" // Connect ESLint to TypeScript config
   },
-  "ignorePatterns": [
-    "dist"
-  ],
   "rules": {
     "quotes": ["warn", "single"],
     "indent": ["warn", 2, { "SwitchCase": 1 }],
