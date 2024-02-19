@@ -1,17 +1,21 @@
-import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, Categories, CharacteristicValue,
-  CharacteristicSetCallback } from 'homebridge';
-import { CharacteristicChange, CharacteristicGetCallback, HAPStatus } from 'hap-nodejs';
+import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, Categories, CharacteristicValue, CharacteristicSetCallback,
+  CharacteristicChange, CharacteristicGetCallback, HAPStatus } from 'homebridge';
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings.js';
 import { Action, Client, Command, Device, Execution } from 'overkiz-client';
 import { hostname } from 'os';
 import { HoldPosition, MoveToPosition, TaHomaCharacteristic, addCharacteristic, createServiceAccessoryInformation, createServiceWindowCovering} from './hapCustom.js';
 import { NodeStorageManager } from 'node-storage-manager';
+import { CLogger, TimestampFormat } from 'node-color-logger';
 import path from 'path';
 
-// npm link node-storage-manager
+// npm link --save node-storage-manager
+// npm link --save node-color-logger
 
 export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
   public readonly accessories: PlatformAccessory[] = [];
+
+  // CLogger
+  public log: CLogger;
 
   // NodeStorageManager
   nodeStorageManager: NodeStorageManager;
@@ -20,10 +24,12 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
   tahomaClient: Client;
 
   constructor(
-    public readonly log: Logger,
+    public readonly hbLog: Logger,
     public readonly config: PlatformConfig,
     public readonly api: API,
   ) {
+
+    this.log = new CLogger({ logName: 'Somfy TaHoma Screen', logTimestampFormat: TimestampFormat.TIME_MILLIS });
     this.log.debug('Finished initializing platform:', this.config.name);
 
     // create NodeStorageManager
@@ -41,12 +47,12 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
     });
 
     this.api.on('didFinishLaunching', () => {
-      log.debug('Executed didFinishLaunching callback');
+      this.log.debug('Executed didFinishLaunching callback');
 
       //this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, this.accessories);
-      setTimeout( () => {
+      setTimeout( async () => {
         //this.accessories.splice(0);
-        this.discoverDevices();
+        await this.discoverDevices();
       }, 1000);
     });
   }
@@ -80,7 +86,7 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
 
       if (existingAccessory) {
 
-        this.log.info('Restoring existing accessory from cache:', existingAccessory.displayName);
+        this.log.info('Restoring existing accessory:', existingAccessory.displayName);
 
         await this.setupAccessory(existingAccessory, device);
 

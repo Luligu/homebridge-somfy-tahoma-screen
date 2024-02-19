@@ -1,5 +1,5 @@
 /**
- * This file contains the class hapConverter and all the interfaces.
+ * This file contains the helpers for HAP-NodeJS and homebridge packages.
  *
  * @file hapCustom.ts
  * @author Luca Liguori
@@ -33,8 +33,7 @@ import {
 } from 'hap-nodejs';
 import * as crypto from 'crypto';
 import { EventEmitter } from 'events';
-import { CustomLogger, db, dn, er, hk, id, rk, rs, wr, zb } from './customLogger.js';
-import { debugStringify } from './stringify.js';
+import { CLogger, debugStringify, db, dn, er, hk, id, rk, rs, wr, zb } from 'node-color-logger';
 import { NodeStorage, NodeStorageKey } from 'node-storage-manager';
 
 export const HapCategoryNames: { [key: number]: string } = {
@@ -1055,7 +1054,7 @@ export const setActiveFault = (service: Service, statusActive: boolean | undefin
   }
 };
 
-export function logAccessory(accessory: Accessory, log: CustomLogger) {
+export function logAccessory(accessory: Accessory, log: CLogger) {
   // eslint-disable-next-line max-len
   log.debug(`Accessory ${id}${accessory.displayName}${rk}${rs}${db} UUID: ${accessory.UUID} AID: ${accessory.aid} cat ${hk}${HapCategoryNames[accessory.category]}${db} ${accessory.reachable ? wr + 'reachable' : er + 'not reachable'}${db} ${accessory.bridged === true ? wr + 'bridged' + db + ' with ' + accessory.bridge?._accessoryInfo?.displayName : 'not bridged'} `);
   for (const service of accessory.services) {
