@@ -34,7 +34,7 @@ import {
 import * as crypto from 'crypto';
 import { EventEmitter } from 'events';
 import { AnsiLogger, debugStringify, db, dn, er, hk, id, rk, rs, wr, zb } from 'node-ansi-logger';
-import { NodeStorage, NodeStorageKey } from 'node-storage-manager';
+import { NodeStorage, NodeStorageKey } from 'node-persist-manager';
 
 export const HapCategoryNames: { [key: number]: string } = {
   [Categories.OTHER]: 'OTHER',

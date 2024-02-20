@@ -4,7 +4,7 @@ import { PLATFORM_NAME, PLUGIN_NAME } from './settings.js';
 import { Action, Client, Command, Device, Execution } from 'overkiz-client';
 import { hostname } from 'os';
 import { HoldPosition, MoveToPosition, TaHomaCharacteristic, addCharacteristic, createServiceAccessoryInformation, createServiceWindowCovering} from './hapCustom.js';
-import { NodeStorageManager } from 'node-storage-manager';
+import { NodeStorageManager } from 'node-persist-manager';
 import { AnsiLogger, TimestampFormat } from 'node-ansi-logger';
 import path from 'path';
 

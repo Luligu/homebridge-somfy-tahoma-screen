@@ -39,8 +39,8 @@
     "Blind"
   ],
   "dependencies": {
-    "node-ansi-logger": "file:../node-ansi-logger",
-    "node-storage-manager": "file:../node-storage-manager",
+    "node-ansi-logger": "^1.9.1",
+    "node-persist-manager": "^1.0.3",
     "overkiz-client": "^1.0.18"
   },
   "devDependencies": {
