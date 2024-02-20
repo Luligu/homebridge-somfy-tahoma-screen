@@ -33,7 +33,7 @@ import {
 } from 'hap-nodejs';
 import * as crypto from 'crypto';
 import { EventEmitter } from 'events';
-import { CLogger, debugStringify, db, dn, er, hk, id, rk, rs, wr, zb } from 'node-color-logger';
+import { AnsiLogger, debugStringify, db, dn, er, hk, id, rk, rs, wr, zb } from 'node-ansi-logger';
 import { NodeStorage, NodeStorageKey } from 'node-storage-manager';
 
 export const HapCategoryNames: { [key: number]: string } = {
@@ -1054,7 +1054,7 @@ export const setActiveFault = (service: Service, statusActive: boolean | undefin
   }
 };
 
-export function logAccessory(accessory: Accessory, log: CLogger) {
+export function logAccessory(accessory: Accessory, log: AnsiLogger) {
   // eslint-disable-next-line max-len
   log.debug(`Accessory ${id}${accessory.displayName}${rk}${rs}${db} UUID: ${accessory.UUID} AID: ${accessory.aid} cat ${hk}${HapCategoryNames[accessory.category]}${db} ${accessory.reachable ? wr + 'reachable' : er + 'not reachable'}${db} ${accessory.bridged === true ? wr + 'bridged' + db + ' with ' + accessory.bridge?._accessoryInfo?.displayName : 'not bridged'} `);
   for (const service of accessory.services) {

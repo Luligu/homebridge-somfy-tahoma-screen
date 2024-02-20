@@ -5,7 +5,7 @@ import { Action, Client, Command, Device, Execution } from 'overkiz-client';
 import { hostname } from 'os';
 import { HoldPosition, MoveToPosition, TaHomaCharacteristic, addCharacteristic, createServiceAccessoryInformation, createServiceWindowCovering} from './hapCustom.js';
 import { NodeStorageManager } from 'node-storage-manager';
-import { CLogger, TimestampFormat } from 'node-color-logger';
+import { AnsiLogger, TimestampFormat } from 'node-ansi-logger';
 import path from 'path';
 
 // npm link --save node-storage-manager
@@ -15,7 +15,7 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
   public readonly accessories: PlatformAccessory[] = [];
 
   // CLogger
-  public log: CLogger;
+  public log: AnsiLogger;
 
   // NodeStorageManager
   nodeStorageManager: NodeStorageManager;
@@ -29,7 +29,7 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
     public readonly api: API,
   ) {
 
-    this.log = new CLogger({ logName: 'Somfy TaHoma Screen', logTimestampFormat: TimestampFormat.TIME_MILLIS });
+    this.log = new AnsiLogger({ logName: 'Somfy TaHoma Screen', logTimestampFormat: TimestampFormat.TIME_MILLIS });
     this.log.debug('Finished initializing platform:', this.config.name);
 
     // create NodeStorageManager
