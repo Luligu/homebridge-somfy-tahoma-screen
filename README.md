@@ -10,8 +10,9 @@
 
 </span>
 
-![verified-by-homebridge](https://img.shields.io/badge/homebridge-verified-blueviolet?color=%23491F59&style=for-the-badge&logoColor=%23FFFFFF&logo=homebridge)(https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
-This plugin allows to expose the Somfy TaHoma stateless screens.
+![verified-by-homebridge](https://img.shields.io/badge/homebridge-verified-blueviolet?color=%23491F59&style=for-the-badge&logoColor=%23FFFFFF&logo=homebridge)
+---
+- This plugin allows to expose the Somfy TaHoma stateless screens.
 The stateless screens don't show up in the TaHoma HomeKit bridge because they don't have a bidirectional radio. 
 This plugin resolve the problem counting the time of the screen movement (see Usage section).
 
