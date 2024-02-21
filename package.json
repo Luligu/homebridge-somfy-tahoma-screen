@@ -1,7 +1,7 @@
 {
   "displayName": "Somfy TaHoma Screen",
   "name": "homebridge-somfy-tahoma-screen",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "Somfy TaHoma stateless screens plugin",
   "author": "https://github.com/Luligu",
   "license": "Apache-2.0",
