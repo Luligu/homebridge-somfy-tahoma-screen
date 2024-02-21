@@ -22,6 +22,6 @@ This plugin resolve the problem counting the time of the screen movement (see Us
 
 - Using the Eve app or any of the HomeKit enabled apps that show custom characteristics set for all the screens in your 
 setup the duration in seconds of the full movement (from full closed to full opened) and the duration of movement from 
-full close to MY position. The pulgin will use this data to determine the actual position of the screen.
+full close to MY position. The plugin will use this data to determine the actual position of the screen.
 
-```
+---
