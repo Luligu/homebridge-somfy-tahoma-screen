@@ -8,8 +8,8 @@ import { NodeStorageManager } from 'node-persist-manager';
 import { AnsiLogger, TimestampFormat } from 'node-ansi-logger';
 import path from 'path';
 
-// npm link --save node-storage-manager
-// npm link --save node-color-logger
+// npm link --save node-persist-manager
+// npm link --save node-ansi-logger
 
 export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
   public readonly accessories: PlatformAccessory[] = [];
