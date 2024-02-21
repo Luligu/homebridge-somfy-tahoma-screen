@@ -1,3 +1,4 @@
+# .npmignore
 # Ignore source code
 src
 
@@ -8,9 +9,11 @@ src
 
 # eslint
 .eslintrc
+.eslintignore
 
 # typescript
 tsconfig.json
+tsconfig.eslint.json
 
 # vscode
 .vscode
@@ -132,3 +135,13 @@ web_modules/
 .yarn/unplugged
 .yarn/build-state.yml
 .pnp.*
+
+# jest
+jest.config.mjs
+__test__
+
+# eslint
+.eslintrc
+.eslintignore
+
+Screenshot.png
