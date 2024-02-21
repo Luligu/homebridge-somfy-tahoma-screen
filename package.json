@@ -13,11 +13,12 @@
     "url": "https://github.com/Luligu/homebridge-somfy-tahoma-screen/issues"
   },
   "engines": {
-    "node": "^18.17.0 || ^20.9.0",
+    "node": "^18.19.0 || ^20.11.0",
     "homebridge": "^1.7.0"
   },
   "type": "module",
   "main": "dist/index.js",
+  "types": "dist/index.d.js",
   "scripts": {
     "lint": "eslint src/**.ts --max-warnings=0",
     "lint:fix": "eslint src/**.ts --fix",
