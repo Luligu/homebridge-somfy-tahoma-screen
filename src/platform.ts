@@ -3,13 +3,14 @@ import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, 
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings.js';
 import { Action, Client, Command, Device, Execution } from 'overkiz-client';
 import { hostname } from 'os';
-import { HoldPosition, MoveToPosition, TaHomaCharacteristic, addCharacteristic, createServiceAccessoryInformation, createServiceWindowCovering} from './hapCustom.js';
+import { HoldPosition, MoveToPosition, TaHomaCharacteristic, addCharacteristic, createServiceAccessoryInformation, createServiceWindowCovering, logAccessory} from './hapCustom.js';
 import { NodeStorageManager } from 'node-persist-manager';
 import { AnsiLogger, TimestampFormat } from 'node-ansi-logger';
 import path from 'path';
 
 // npm link --save node-persist-manager
 // npm link --save node-ansi-logger
+// ![verified-by-homebridge](https://img.shields.io/badge/homebridge-verified-blueviolet?color=%23491F59&style=for-the-badge&logoColor=%23FFFFFF&logo=homebridge)
 
 export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
   public readonly accessories: PlatformAccessory[] = [];
@@ -103,17 +104,20 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
     }
   }
 
+  //const api = typeof import('c:/Users/lligu/OneDrive/GitHub/homebridge-somfy-tahoma-screen/node_modules/hap-nodejs/dist/index');
+
   async setupAccessory(platformAccessory: PlatformAccessory, device: Device) {
+
     const Service = this.api.hap.Service;
     const Characteristic = this.api.hap.Characteristic;
-    const accessory = platformAccessory._associatedHAPAccessory;
+    const accessory = platformAccessory;
 
     const deviceStorage = await this.nodeStorageManager.createStorage(device.label);
     let windowCoveringCurrentPosition = await deviceStorage.get<number>('currentPosition', 100);
     let windowCoveringTargetPosition = await deviceStorage.get<number>('currentPosition', 100);
-    createServiceAccessoryInformation(accessory, device.label,
+    createServiceAccessoryInformation(this.api, accessory, device.label,
       { manufacturer: 'Somfy-TaHoma', model: device.definition.uiClass, serialNumber: device.serialNumber+hostname });
-    createServiceWindowCovering(accessory, device.label, {
+    createServiceWindowCovering(this.api, accessory, device.label, {
       currentPosition: windowCoveringCurrentPosition, targetPosition: windowCoveringTargetPosition, positionState: Characteristic.PositionState.STOPPED,
       obstructionDetected: false, holdPosition: false, statusActive: true, statusFault: Characteristic.StatusFault.NO_FAULT, primary: true, nodeStorage: deviceStorage,
       onChangeCurrentPosition: async (change: CharacteristicChange) => {
@@ -127,58 +131,59 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
       },
       onSetTargetPosition: async (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
         this.log.debug('onSetTargetPosition', device.label, windowCoveringTargetPosition = value as number);
-        MoveToPosition(accessory.getService(Service.WindowCovering)!, windowCoveringTargetPosition, await deviceStorage.get<number>('TaHomaDuration', 26),
+        MoveToPosition(this.api, accessory.getService(Service.WindowCovering)!, windowCoveringTargetPosition, await deviceStorage.get<number>('TaHomaDuration', 26),
           (command) => this.sendCommand(command, device, true));
         callback(HAPStatus.SUCCESS);
       },
       onSetHoldPosition: (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
         this.log.debug('onSetHoldPosition', device.label);
         windowCoveringCurrentPosition = accessory.getService(Service.WindowCovering)!.getCharacteristic(Characteristic.CurrentPosition).value as number;
-        HoldPosition(accessory.getService(Service.WindowCovering)!, windowCoveringCurrentPosition, (command) => this.sendCommand(command, device, true));
+        HoldPosition(this.api, accessory.getService(Service.WindowCovering)!, windowCoveringCurrentPosition, (command) => this.sendCommand(command, device, true));
         callback(HAPStatus.SUCCESS);
       },
     });
-    addCharacteristic(accessory, Service.WindowCovering, TaHomaCharacteristic.TaHomaUpButton, {
+    addCharacteristic(this.api, accessory, Service.WindowCovering, TaHomaCharacteristic.TaHomaUpButton, {
       value: false, onSet: (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
         callback(HAPStatus.SUCCESS);
         if (value === true) {
           accessory.getService(Service.WindowCovering)?.setCharacteristic(Characteristic.TargetPosition, 100);
-          accessory.getService(Service.WindowCovering)?.setCharacteristic(TaHomaCharacteristic.TaHomaUpButton, false);
+          accessory.getService(Service.WindowCovering)?.setCharacteristic('Remote [up]', false);
         }
       },
     });
-    addCharacteristic(accessory, Service.WindowCovering, TaHomaCharacteristic.TaHomaMyButton, {
+    addCharacteristic(this.api, accessory, Service.WindowCovering, TaHomaCharacteristic.TaHomaMyButton, {
       value: false, onSet: (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
         callback(HAPStatus.SUCCESS);
         if (value === true) {
           accessory.getService(Service.WindowCovering)?.setCharacteristic(Characteristic.TargetPosition, 50);
-          accessory.getService(Service.WindowCovering)?.setCharacteristic(TaHomaCharacteristic.TaHomaMyButton, false);
+          accessory.getService(Service.WindowCovering)?.setCharacteristic('Remote [my]', false);
         }
       },
     });
-    addCharacteristic(accessory, Service.WindowCovering, TaHomaCharacteristic.TaHomaDownButton, {
+    addCharacteristic(this.api, accessory, Service.WindowCovering, TaHomaCharacteristic.TaHomaDownButton, {
       value: false, onSet: (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
         callback(HAPStatus.SUCCESS);
         if (value === true) {
           accessory.getService(Service.WindowCovering)?.setCharacteristic(Characteristic.TargetPosition, 0);
-          accessory.getService(Service.WindowCovering)?.setCharacteristic(TaHomaCharacteristic.TaHomaDownButton, false);
+          accessory.getService(Service.WindowCovering)?.setCharacteristic('Remote [down]', false);
         }
       },
     });
-    addCharacteristic(accessory, Service.WindowCovering, TaHomaCharacteristic.TaHomaMyDuration, {
+    addCharacteristic(this.api, accessory, Service.WindowCovering, TaHomaCharacteristic.TaHomaMyDuration, {
       nodeStorage: deviceStorage, storageKey: 'TaHomaMyDuration', storageDefaultValue: 12,
       onSet: async (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
         callback(HAPStatus.SUCCESS);
         await deviceStorage.set<number>('TaHomaMyDuration', value as number);
       },
     });
-    addCharacteristic(accessory, Service.WindowCovering, TaHomaCharacteristic.TaHomaDuration, {
+    addCharacteristic(this.api, accessory, Service.WindowCovering, TaHomaCharacteristic.TaHomaDuration, {
       nodeStorage: deviceStorage, storageKey: 'TaHomaDuration', storageDefaultValue: 26,
       onSet: async (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
         callback(HAPStatus.SUCCESS);
         await deviceStorage.set<number>('TaHomaDuration', value as number);
       },
     });
+    logAccessory(accessory, this.log);
 
     //const windowCoveringHistory = new HapHistory(log, accessory, { enableAutopilot: true, enableConfigData: true, filePath: './persist' });
   }
