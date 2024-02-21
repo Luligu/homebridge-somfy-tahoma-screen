@@ -11,9 +11,17 @@
 </span>
 
 This plugin allows to expose the Somfy TaHoma stateless screens.
-The stateless screens don't show up in the TaHoma HomeKit bridge because they don't have a bidirectional radio.
+The stateless screens don't show up in the TaHoma HomeKit bridge because they don't have a bidirectional radio. 
+This plugin resolve the problem counting the time of the screen movement (see Usage section).
 
-## Requirments
----
-A working setup of any of the TaHoma bridges.
----
+## Requirements
+
+- A working setup of any of the TaHoma bridges.
+
+## How to use it
+
+- Using the Eve app or any of the HomeKit enabled apps that show custom characteristics set for all the screens in your 
+setup the duration in seconds of the full movement (from full closed to full opened) and the duration of movement from 
+full close to MY position. The pulgin will use this data to determine the actual position of the screen.
+
+```
