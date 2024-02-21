@@ -16,7 +16,7 @@ This plugin resolve the problem counting the time of the screen movement (see Us
 
 ## Requirements
 
-- A working setup of any of the TaHoma bridges.
+- A working setup of any of the TaHoma bridges (like the Connectivity kit).
 
 ## How to use it
 
@@ -24,4 +24,10 @@ This plugin resolve the problem counting the time of the screen movement (see Us
 setup the duration in seconds of the full movement (from full closed to full opened) and the duration of movement from 
 full close to MY position. The plugin will use this data to determine the actual position of the screen.
 
+- You can then ask Siri
+´´´
+Siri open the Living room blind
+Siri close the Living room blind
+Siri set the Living room blind to 70%
+´´´
 ---
