@@ -18,7 +18,6 @@ import {
   CharacteristicSetCallback,
   CharacteristicValue,
   CharacteristicChange,
-  Formats,
   Perms,
   WithUUID,
   CharacteristicGetHandler,
@@ -27,10 +26,8 @@ import {
   Categories,
   PlatformAccessory,
   CharacteristicProps,
-  Units,
 } from 'homebridge';
 import * as crypto from 'crypto';
-import { EventEmitter } from 'events';
 import { AnsiLogger, debugStringify, db, dn, er, hk, id, rk, rs, wr, zb } from 'node-ansi-logger';
 import { NodeStorage, NodeStorageKey } from 'node-persist-manager';
 
@@ -92,66 +89,6 @@ export type CharacteristicChangeListener = (change: CharacteristicChange) => voi
 export type CharacteristicSubscribeListener = VoidCallback;
 export type CharacteristicUnsubscribeListener = VoidCallback;
 export type CharacteristicWarningListener = (type: CharacteristicWarningType, message: string, stack?: string) => void;
-
-export class TaHomaCharacteristic extends EventEmitter {
-  public static TaHomaMyButton: typeof TaHomaMyButton;
-  public static TaHomaUpButton: typeof TaHomaUpButton;
-  public static TaHomaDownButton: typeof TaHomaDownButton;
-  public static TaHomaDuration: typeof TaHomaDuration;
-  public static TaHomaMyDuration: typeof TaHomaMyDuration;
-}
-
-export class TaHomaMyButton {
-  public static readonly UUID: string = '4F6B9801-0723-412F-8567-678605A29F52';
-  public static props: CharacteristicProps = { format: Formats.BOOL, perms: [Perms.PAIRED_READ, Perms.PAIRED_WRITE, Perms.EVENTS] };
-  public static name: string = 'Remote [my]';
-  public static value = false;
-  constructor() {
-  }
-}
-TaHomaCharacteristic.TaHomaMyButton = TaHomaMyButton;
-
-export class TaHomaUpButton {
-  public static readonly UUID: string = '4F6B9802-0723-412F-8567-678605A29F52';
-  public static props: CharacteristicProps = { format: Formats.BOOL, perms: [Perms.PAIRED_READ, Perms.PAIRED_WRITE, Perms.EVENTS] };
-  public static name: string = 'Remote [up]';
-  public static value = false;
-  constructor() {
-  }
-}
-TaHomaCharacteristic.TaHomaUpButton = TaHomaUpButton;
-
-export class TaHomaDownButton {
-  public static readonly UUID: string = '4F6B9803-0723-412F-8567-678605A29F52';
-  public static props: CharacteristicProps = { format: Formats.BOOL, perms: [Perms.PAIRED_READ, Perms.PAIRED_WRITE, Perms.EVENTS] };
-  public static name: string = 'Remote [down]';
-  public static value = false;
-  constructor() {
-  }
-}
-TaHomaCharacteristic.TaHomaDownButton = TaHomaDownButton;
-
-export class TaHomaDuration {
-  public static readonly UUID: string = '4F6B9804-0723-412F-8567-678605A29F52';
-  // eslint-disable-next-line max-len
-  public static props: CharacteristicProps = { format: Formats.UINT8, unit: Units.SECONDS, minValue: 1, maxValue: 60, minStep: 1, perms: [Perms.PAIRED_READ, Perms.PAIRED_WRITE, Perms.EVENTS] };
-  public static name: string = 'Duration of movement';
-  public static value = 26;
-  constructor() {
-  }
-}
-TaHomaCharacteristic.TaHomaDuration = TaHomaDuration;
-
-export class TaHomaMyDuration {
-  public static readonly UUID: string = '4F6B9805-0723-412F-8567-678605A29F52';
-  // eslint-disable-next-line max-len
-  public static props: CharacteristicProps = { format: Formats.UINT8, unit: Units.SECONDS, minValue: 1, maxValue: 60, minStep: 1, perms: [Perms.PAIRED_READ, Perms.PAIRED_WRITE, Perms.EVENTS] };
-  public static name: string = 'Duration of [my] movement';
-  public static value = 12;
-  constructor() {
-  }
-}
-TaHomaCharacteristic.TaHomaMyDuration = TaHomaMyDuration;
 
 export interface AccessoryInformationParams extends BaseServiceParams {
   model?: string;
@@ -370,7 +307,7 @@ export interface AddCharacteristicParams {
   onSetAsync?: CharacteristicSetHandler;
 }
 
-export interface AddCharacteristicDefinition {
+export interface CharacteristicDefinition {
   name: string;
   UUID: string;
   props: CharacteristicProps;
@@ -378,7 +315,7 @@ export interface AddCharacteristicDefinition {
 }
 
 export async function addCharacteristic<S extends WithUUID<typeof Service>>(api: API, accessory: PlatformAccessory, service: string | S,
-  characteristic: AddCharacteristicDefinition, params: AddCharacteristicParams) {
+  characteristic: CharacteristicDefinition, params: AddCharacteristicParams) {
   //console.log(characteristic);
   const _service = accessory.getService(service);
   if (!_service) {

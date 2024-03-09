@@ -1,9 +1,9 @@
 import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, Categories, CharacteristicValue, CharacteristicSetCallback,
-  CharacteristicChange, CharacteristicGetCallback, HAPStatus } from 'homebridge';
+  CharacteristicChange, CharacteristicGetCallback, HAPStatus, Formats, Perms, Units } from 'homebridge';
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings.js';
 import { Action, Client, Command, Device, Execution } from 'overkiz-client';
 import { hostname } from 'os';
-import { HoldPosition, MoveToPosition, TaHomaCharacteristic, addCharacteristic, createServiceAccessoryInformation, createServiceWindowCovering, logAccessory} from './hapCustom.js';
+import { CharacteristicDefinition, HoldPosition, MoveToPosition, addCharacteristic, createServiceAccessoryInformation, createServiceWindowCovering} from './hapCustom.js';
 import { NodeStorageManager } from 'node-persist-manager';
 import { AnsiLogger, TimestampFormat } from 'node-ansi-logger';
 import path from 'path';
@@ -15,7 +15,7 @@ import path from 'path';
 export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
   public readonly accessories: PlatformAccessory[] = [];
 
-  // CLogger
+  // Logger
   public log: AnsiLogger;
 
   // NodeStorageManager
@@ -107,9 +107,44 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
   //const api = typeof import('c:/Users/lligu/OneDrive/GitHub/homebridge-somfy-tahoma-screen/node_modules/hap-nodejs/dist/index');
 
   async setupAccessory(platformAccessory: PlatformAccessory, device: Device) {
-
     const Service = this.api.hap.Service;
     const Characteristic = this.api.hap.Characteristic;
+
+    const TaHomaMyButton: CharacteristicDefinition = {
+      UUID: '4F6B9801-0723-412F-8567-678605A29F52',
+      props: { format: Formats.BOOL, perms: [Perms.PAIRED_READ, Perms.PAIRED_WRITE, Perms.EVENTS] },
+      name:  'Remote [my]',
+      value: false,
+    };
+
+    const TaHomaUpButton: CharacteristicDefinition = {
+      UUID: '4F6B9802-0723-412F-8567-678605A29F52',
+      props:  { format: Formats.BOOL, perms: [Perms.PAIRED_READ, Perms.PAIRED_WRITE, Perms.EVENTS] },
+      name:  'Remote [up]',
+      value:  false,
+    };
+
+    const TaHomaDownButton: CharacteristicDefinition = {
+      UUID: '4F6B9803-0723-412F-8567-678605A29F52',
+      props:  { format: Formats.BOOL, perms: [Perms.PAIRED_READ, Perms.PAIRED_WRITE, Perms.EVENTS] },
+      name:  'Remote [down]',
+      value: false,
+    };
+
+    const TaHomaDuration: CharacteristicDefinition = {
+      UUID: '4F6B9804-0723-412F-8567-678605A29F52',
+      props:  { format: Formats.UINT8, unit: Units.SECONDS, minValue: 1, maxValue: 60, minStep: 1, perms: [Perms.PAIRED_READ, Perms.PAIRED_WRITE, Perms.EVENTS] },
+      name:   'Duration of movement',
+      value: 26,
+    };
+
+    const TaHomaMyDuration: CharacteristicDefinition = {
+      UUID:  '4F6B9805-0723-412F-8567-678605A29F52',
+      props:  { format: Formats.UINT8, unit: Units.SECONDS, minValue: 1, maxValue: 60, minStep: 1, perms: [Perms.PAIRED_READ, Perms.PAIRED_WRITE, Perms.EVENTS] },
+      name:   'Duration of [my] movement',
+      value:  12,
+    };
+
     const accessory = platformAccessory;
 
     const deviceStorage = await this.nodeStorageManager.createStorage(device.label);
@@ -142,7 +177,7 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
         callback(HAPStatus.SUCCESS);
       },
     });
-    addCharacteristic(this.api, accessory, Service.WindowCovering, TaHomaCharacteristic.TaHomaUpButton, {
+    addCharacteristic(this.api, accessory, Service.WindowCovering, TaHomaUpButton, {
       value: false, onSet: (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
         callback(HAPStatus.SUCCESS);
         if (value === true) {
@@ -151,7 +186,7 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
         }
       },
     });
-    addCharacteristic(this.api, accessory, Service.WindowCovering, TaHomaCharacteristic.TaHomaMyButton, {
+    addCharacteristic(this.api, accessory, Service.WindowCovering, TaHomaMyButton, {
       value: false, onSet: (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
         callback(HAPStatus.SUCCESS);
         if (value === true) {
@@ -160,7 +195,7 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
         }
       },
     });
-    addCharacteristic(this.api, accessory, Service.WindowCovering, TaHomaCharacteristic.TaHomaDownButton, {
+    addCharacteristic(this.api, accessory, Service.WindowCovering, TaHomaDownButton, {
       value: false, onSet: (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
         callback(HAPStatus.SUCCESS);
         if (value === true) {
@@ -169,21 +204,21 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
         }
       },
     });
-    addCharacteristic(this.api, accessory, Service.WindowCovering, TaHomaCharacteristic.TaHomaMyDuration, {
+    addCharacteristic(this.api, accessory, Service.WindowCovering, TaHomaMyDuration, {
       nodeStorage: deviceStorage, storageKey: 'TaHomaMyDuration', storageDefaultValue: 12,
       onSet: async (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
         callback(HAPStatus.SUCCESS);
         await deviceStorage.set<number>('TaHomaMyDuration', value as number);
       },
     });
-    addCharacteristic(this.api, accessory, Service.WindowCovering, TaHomaCharacteristic.TaHomaDuration, {
+    addCharacteristic(this.api, accessory, Service.WindowCovering, TaHomaDuration, {
       nodeStorage: deviceStorage, storageKey: 'TaHomaDuration', storageDefaultValue: 26,
       onSet: async (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
         callback(HAPStatus.SUCCESS);
         await deviceStorage.set<number>('TaHomaDuration', value as number);
       },
     });
-    logAccessory(accessory, this.log);
+    //logAccessory(accessory, this.log);
 
     //const windowCoveringHistory = new HapHistory(log, accessory, { enableAutopilot: true, enableConfigData: true, filePath: './persist' });
   }
