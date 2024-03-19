@@ -16,13 +16,13 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
   public readonly accessories: PlatformAccessory[] = [];
 
   // Logger
-  public log: AnsiLogger;
+  log: AnsiLogger;
 
   // NodeStorageManager
   nodeStorageManager: NodeStorageManager;
 
   // TaHoma
-  tahomaClient: Client;
+  tahomaClient?: Client;
 
   constructor(
     public readonly hbLog: Logger,
@@ -30,11 +30,18 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
     public readonly api: API,
   ) {
 
+    // create AnsiLogger
     this.log = new AnsiLogger({ logName: 'Somfy TaHoma Screen', logTimestampFormat: TimestampFormat.TIME_MILLIS });
-    this.log.debug('Finished initializing platform:', this.config.name);
 
     // create NodeStorageManager
     this.nodeStorageManager = new NodeStorageManager({dir: path.join(this.api.user.storagePath(), 'homebridge-somfy-tahoma-screen'), logging: false});
+
+    if( !this.config.service || !this.config.username || !this.config.password) {
+      this.log.error('No service or username or password provided for:', this.config.name);
+      return;
+    }
+    this.log.info('Finished initializing platform:', this.config.name);
+
 
     // create TaHoma client
     this.tahomaClient = new Client(this.log, { service: this.config.service, user: this.config.username, password: this.config.password });
@@ -68,8 +75,25 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
     const blindDevices: Device[] = [];
 
     // TaHoma
-    await this.tahomaClient.connect(this.config.username, this.config.password);
-    const devices = await this.tahomaClient.getDevices();
+    if(!this.tahomaClient) {
+      return;
+    }
+    let devices: Device[] = [];
+    try {
+      await this.tahomaClient.connect(this.config.username, this.config.password);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      this.log.info('Error connecting to TaHoma service:', error.response?.data);
+      return;
+    }
+    try {
+      devices = await this.tahomaClient.getDevices();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      this.log.info('Error discovering TaHoma devices:', error.response?.data);
+      return;
+    }
+
     this.log.info('TaHoma', devices.length, 'devices discovered');
 
     for (const device of devices) {
@@ -225,10 +249,13 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
 
   sendCommand(command: string, device: Device, highPriority = false) {
     this.log.debug(`*Sending command ${command} highPriority ${highPriority}`);
-    const _command = new Command(command);
-    const _action = new Action(device.deviceURL, [_command]);
-    const _execution = new Execution('Sending ' + command, _action);
-    this.tahomaClient.execute(highPriority ? 'apply/highPriority' : 'apply', _execution);
+    try {
+      const _command = new Command(command);
+      const _action = new Action(device.deviceURL, [_command]);
+      const _execution = new Execution('Sending ' + command, _action);
+      this.tahomaClient?.execute(highPriority ? 'apply/highPriority' : 'apply', _execution);
+    } catch (error) {
+      this.log.error('Error sending command');
+    }
   }
-
 }
