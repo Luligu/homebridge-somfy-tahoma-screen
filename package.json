@@ -12,6 +12,10 @@
   "bugs": {
     "url": "https://github.com/Luligu/homebridge-somfy-tahoma-screen/issues"
   },
+  "funding": {
+      "type" : "buymeacoffee",
+      "url" : "https://www.buymeacoffee.com/luligugithub"
+    },
   "engines": {
     "node": "^18.19.0 || ^20.11.0",
     "homebridge": "^1.7.0"
@@ -34,6 +38,11 @@
   },
   "keywords": [
     "homebridge-plugin",
+    "homebridge",
+    "plugin",
+    "bridge",
+    "Connectivity kit",
+    "homekit",
     "Somfy",
     "TaHoma",
     "Screen",
