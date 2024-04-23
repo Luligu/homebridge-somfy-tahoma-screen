@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - [prettier]: Added prettier.
-- [eslint]: Added @stylistic.
+- [eslint]: Added stylistic.
 
 ### Changed
 
