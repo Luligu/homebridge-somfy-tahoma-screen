@@ -144,4 +144,8 @@ __test__
 .eslintrc
 .eslintignore
 
+# eslint
+.prettierignore
+.prettierrc.json
+
 Screenshot.png
