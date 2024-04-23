@@ -1,7 +1,7 @@
 {
   "displayName": "Somfy TaHoma Screen",
   "name": "homebridge-somfy-tahoma-screen",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "Somfy TaHoma stateless screens plugin",
   "author": "https://github.com/Luligu",
   "license": "Apache-2.0",
@@ -14,15 +14,15 @@
     "url": "https://github.com/Luligu/homebridge-somfy-tahoma-screen/issues"
   },
   "funding": {
-      "type" : "buymeacoffee",
-      "url" : "https://www.buymeacoffee.com/luligugithub"
-    },
+    "type": "buymeacoffee",
+    "url": "https://www.buymeacoffee.com/luligugithub"
+  },
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.js",
   "engines": {
-    "node": "^18.19.0 || ^20.12.0",
-    "homebridge": "^1.7.0"
+    "node": ">=18.0.0",
+    "homebridge": "^1.8.0"
   },
   "scripts": {
     "start": "homebridge -I -D",
@@ -34,6 +34,8 @@
     "deepClean": "rimraf tsconfig.tsbuildinfo package-lock.json ./dist ./node_modules",
     "lint": "eslint src/**.ts --max-warnings=0",
     "lint:fix": "eslint src/**.ts --fix",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
+    "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "prepublishOnly": "npm run lint && npm run cleanBuild",
     "checkDependencies": "npx npm-check-updates",
     "updateDependencies": "npx npm-check-updates -u"
@@ -52,20 +54,23 @@
     "Blind"
   ],
   "devDependencies": {
-    "@types/node": "^20.11.30",
+    "@stylistic/eslint-plugin": "^1.7.2",
+    "@tsconfig/node-lts": "^20.1.3",
+    "@types/node": "^20.12.7",
     "@types/node-persist": "^3.1.8",
-    "@typescript-eslint/eslint-plugin": "^7.4.0",
-    "@typescript-eslint/parser": "^7.4.0",
-    "eslint": "^8.57.0",
-    "homebridge": "^1.7.0",
+    "@typescript-eslint/eslint-plugin": "^7.7.1",
+    "@typescript-eslint/parser": "^7.7.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "homebridge": "^1.8.0",
     "nodemon": "^3.1.0",
+    "prettier": "^3.2.5",
     "rimraf": "^5.0.5",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.4.3"
+    "typescript": "^5.4.5"
   },
   "dependencies": {
-    "node-ansi-logger": "^1.9.2",
-    "node-persist-manager": "^1.0.6",
+    "node-ansi-logger": "^1.9.5",
+    "node-persist-manager": "^1.0.7",
     "overkiz-client": "^1.0.18"
   }
 }

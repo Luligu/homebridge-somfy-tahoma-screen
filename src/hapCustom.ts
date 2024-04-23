@@ -81,7 +81,7 @@ export declare const enum CharacteristicWarningType {
   TIMEOUT_READ = 'timeout-read',
   WARN_MESSAGE = 'warn-message',
   ERROR_MESSAGE = 'error-message',
-  DEBUG_MESSAGE = 'debug-message'
+  DEBUG_MESSAGE = 'debug-message',
 }
 export type CharacteristicGetListener = (callback: CharacteristicGetCallback, context: CharacteristicContext, connection?: HAPConnection) => void;
 export type CharacteristicSetListener = (value: CharacteristicValue, callback: CharacteristicSetCallback, context: CharacteristicContext, connection?: HAPConnection) => void;
@@ -104,20 +104,23 @@ export interface AccessoryInformationParams extends BaseServiceParams {
 export const createServiceAccessoryInformation = (api: API, accessory: PlatformAccessory, displayName: string, optionalParams?: AccessoryInformationParams) => {
   const Service = api.hap.Service;
   const Characteristic = api.hap.Characteristic;
-  const params: AccessoryInformationParams = Object.assign({
-    model: 'Hap Model',
-    manufacturer: 'Hap Manufacturer',
-    serialNumber: crypto.randomBytes(8).toString('hex'),
-    firmwareRevision: '1.0.0',
-    hardwareRevision: undefined, //'1.0.0',
-    softwareRevision: undefined, //'1.0.0',
-    statusActive: undefined, //true,
-    statusFault: undefined, //Characteristic.StatusFault.NO_FAULT,
-    hidden: undefined,
-    primary: undefined,
-    onSetIdentify: undefined,
-    onSetIdentifyAsync: undefined,
-  }, optionalParams);
+  const params: AccessoryInformationParams = Object.assign(
+    {
+      model: 'Hap Model',
+      manufacturer: 'Hap Manufacturer',
+      serialNumber: crypto.randomBytes(8).toString('hex'),
+      firmwareRevision: '1.0.0',
+      hardwareRevision: undefined, //'1.0.0',
+      softwareRevision: undefined, //'1.0.0',
+      statusActive: undefined, //true,
+      statusFault: undefined, //Characteristic.StatusFault.NO_FAULT,
+      hidden: undefined,
+      primary: undefined,
+      onSetIdentify: undefined,
+      onSetIdentifyAsync: undefined,
+    },
+    optionalParams,
+  );
   const service = accessory.getService(Service.AccessoryInformation) || accessory.addService(new Service.AccessoryInformation(displayName));
   setName(api, service, displayName);
   service.setCharacteristic(Characteristic.Model, params.model!);
@@ -156,58 +159,66 @@ export function MoveToPosition(api: API, service: Service, targetPosition: numbe
     return;
   }
 
-  if (targetPosition > currentPosition) { // Opening
+  if (targetPosition > currentPosition) {
+    // Opening
     const steps = targetPosition - currentPosition;
-    const duration = steps * durationSeconds / 100;
+    const duration = (steps * durationSeconds) / 100;
     // eslint-disable-next-line no-console
     console.log('Opening current', currentPosition, 'target', targetPosition, 'duration', duration, 'steps', steps);
     service.setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.INCREASING);
     executeCommand?.('open');
-    const timeout = setInterval(() => {
-      if (service.getCharacteristic(Characteristic.PositionState).value === Characteristic.PositionState.STOPPED) {
-        clearInterval(timeout);
-        return;
-      }
-      currentPosition += 1;
-      if (currentPosition >= targetPosition) {
-        currentPosition = targetPosition;
-        service.setCharacteristic(Characteristic.CurrentPosition, currentPosition);
-        service.setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.STOPPED);
-        clearInterval(timeout);
-        if (currentPosition !== 100) {
-          executeCommand?.('stop');
+    const timeout = setInterval(
+      () => {
+        if (service.getCharacteristic(Characteristic.PositionState).value === Characteristic.PositionState.STOPPED) {
+          clearInterval(timeout);
+          return;
         }
-      } else {
-        service.setCharacteristic(Characteristic.CurrentPosition, currentPosition);
-      }
-    }, duration / steps * 1000);
+        currentPosition += 1;
+        if (currentPosition >= targetPosition) {
+          currentPosition = targetPosition;
+          service.setCharacteristic(Characteristic.CurrentPosition, currentPosition);
+          service.setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.STOPPED);
+          clearInterval(timeout);
+          if (currentPosition !== 100) {
+            executeCommand?.('stop');
+          }
+        } else {
+          service.setCharacteristic(Characteristic.CurrentPosition, currentPosition);
+        }
+      },
+      (duration / steps) * 1000,
+    );
   }
 
-  if (targetPosition < currentPosition) { // Closing
+  if (targetPosition < currentPosition) {
+    // Closing
     const steps = currentPosition - targetPosition;
-    const duration = steps * durationSeconds / 100;
+    const duration = (steps * durationSeconds) / 100;
     // eslint-disable-next-line no-console
     console.log('Closing current', currentPosition, 'target', targetPosition, 'duration', duration, 'steps', steps);
     service.setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.DECREASING);
     executeCommand?.('close');
-    const timeout = setInterval(() => {
-      if (service.getCharacteristic(Characteristic.PositionState).value === Characteristic.PositionState.STOPPED) {
-        clearInterval(timeout);
-        return;
-      }
-      currentPosition -= 1;
-      if (currentPosition <= targetPosition) {
-        currentPosition = targetPosition;
-        service.setCharacteristic(Characteristic.CurrentPosition, currentPosition);
-        service.setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.STOPPED);
-        clearInterval(timeout);
-        if (currentPosition !== 0) {
-          executeCommand?.('stop');
+    const timeout = setInterval(
+      () => {
+        if (service.getCharacteristic(Characteristic.PositionState).value === Characteristic.PositionState.STOPPED) {
+          clearInterval(timeout);
+          return;
         }
-      } else {
-        service.setCharacteristic(Characteristic.CurrentPosition, currentPosition);
-      }
-    }, duration / steps * 1000);
+        currentPosition -= 1;
+        if (currentPosition <= targetPosition) {
+          currentPosition = targetPosition;
+          service.setCharacteristic(Characteristic.CurrentPosition, currentPosition);
+          service.setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.STOPPED);
+          clearInterval(timeout);
+          if (currentPosition !== 0) {
+            executeCommand?.('stop');
+          }
+        } else {
+          service.setCharacteristic(Characteristic.CurrentPosition, currentPosition);
+        }
+      },
+      (duration / steps) * 1000,
+    );
   }
 }
 
@@ -246,36 +257,37 @@ export interface WindowCoveringParams extends BaseServiceParams {
 export const createServiceWindowCovering = async (api: API, accessory: PlatformAccessory, displayName: string, optionalParams?: WindowCoveringParams) => {
   const Service = api.hap.Service;
   const Characteristic = api.hap.Characteristic;
-  const params: WindowCoveringParams = Object.assign({
-    currentPosition: 0,
-    targetPosition: 0,
-    positionState: Characteristic.PositionState.STOPPED, // read
-    obstructionDetected: undefined, // boolean
-    holdPosition: undefined, // boolean write
-    statusActive: undefined, //true,
-    statusFault: undefined, //Characteristic.StatusFault.NO_FAULT,
-    hidden: undefined,
-    primary: undefined,
-    onChangeCurrentPosition: undefined,
-    onGetCurrentPosition: undefined,
-    onSetTargetPosition: undefined,
-    onSetHoldPosition: undefined,
-  }, optionalParams);
+  const params: WindowCoveringParams = Object.assign(
+    {
+      currentPosition: 0,
+      targetPosition: 0,
+      positionState: Characteristic.PositionState.STOPPED, // read
+      obstructionDetected: undefined, // boolean
+      holdPosition: undefined, // boolean write
+      statusActive: undefined, //true,
+      statusFault: undefined, //Characteristic.StatusFault.NO_FAULT,
+      hidden: undefined,
+      primary: undefined,
+      onChangeCurrentPosition: undefined,
+      onGetCurrentPosition: undefined,
+      onSetTargetPosition: undefined,
+      onSetHoldPosition: undefined,
+    },
+    optionalParams,
+  );
   const service = accessory.getService(Service.WindowCovering) || accessory.addService(new Service.WindowCovering(displayName));
   setName(api, service, displayName);
-  service.setCharacteristic(Characteristic.CurrentPosition,
-    params.nodeStorage ? await params.nodeStorage.get<number>('currentPosition', params.currentPosition) : params.currentPosition);
-  service.setCharacteristic(Characteristic.TargetPosition,
-    params.nodeStorage ? await params.nodeStorage.get<number>('targetPosition', params.targetPosition) : params.targetPosition);
-  service.setCharacteristic(Characteristic.PositionState,
-    params.nodeStorage ? await params.nodeStorage.get<number>('positionState', params.positionState) : params.positionState);
+  service.setCharacteristic(Characteristic.CurrentPosition, params.nodeStorage ? await params.nodeStorage.get<number>('currentPosition', params.currentPosition) : params.currentPosition);
+  service.setCharacteristic(Characteristic.TargetPosition, params.nodeStorage ? await params.nodeStorage.get<number>('targetPosition', params.targetPosition) : params.targetPosition);
+  service.setCharacteristic(Characteristic.PositionState, params.nodeStorage ? await params.nodeStorage.get<number>('positionState', params.positionState) : params.positionState);
   if (params.obstructionDetected !== undefined) {
-    service.setCharacteristic(Characteristic.ObstructionDetected,
-      params.nodeStorage ? await params.nodeStorage.get<boolean>('obstructionDetected', params.obstructionDetected) : params.obstructionDetected);
+    service.setCharacteristic(
+      Characteristic.ObstructionDetected,
+      params.nodeStorage ? await params.nodeStorage.get<boolean>('obstructionDetected', params.obstructionDetected) : params.obstructionDetected,
+    );
   }
   if (params.holdPosition !== undefined) {
-    service.setCharacteristic(Characteristic.HoldPosition,
-      params.nodeStorage ? await params.nodeStorage.get<boolean>('holdPosition', params.holdPosition) : params.holdPosition);
+    service.setCharacteristic(Characteristic.HoldPosition, params.nodeStorage ? await params.nodeStorage.get<boolean>('holdPosition', params.holdPosition) : params.holdPosition);
   }
   setActiveFault(api, service, params.statusActive, params.statusFault);
   setPrimaryHidden(api, service, params.primary, params.hidden);
@@ -314,8 +326,13 @@ export interface CharacteristicDefinition {
   value: CharacteristicValue;
 }
 
-export async function addCharacteristic<S extends WithUUID<typeof Service>>(api: API, accessory: PlatformAccessory, service: string | S,
-  characteristic: CharacteristicDefinition, params: AddCharacteristicParams) {
+export async function addCharacteristic<S extends WithUUID<typeof Service>>(
+  api: API,
+  accessory: PlatformAccessory,
+  service: string | S,
+  characteristic: CharacteristicDefinition,
+  params: AddCharacteristicParams,
+) {
   //console.log(characteristic);
   const _service = accessory.getService(service);
   if (!_service) {
@@ -324,7 +341,7 @@ export async function addCharacteristic<S extends WithUUID<typeof Service>>(api:
   let _characteristic = new api.hap.Characteristic(characteristic.name, characteristic.UUID, characteristic.props);
 
   let isOptional = false;
-  _service.optionalCharacteristics.forEach(optionalCharacteristic => {
+  _service.optionalCharacteristics.forEach((optionalCharacteristic) => {
     if (optionalCharacteristic.UUID === _characteristic.UUID) {
       isOptional = true;
       return;
@@ -335,7 +352,7 @@ export async function addCharacteristic<S extends WithUUID<typeof Service>>(api:
   }
 
   let isPresent = false;
-  _service.characteristics.forEach(characteristic => {
+  _service.characteristics.forEach((characteristic) => {
     if (characteristic.UUID === _characteristic.UUID) {
       _characteristic = characteristic;
       isPresent = true;
@@ -346,7 +363,7 @@ export async function addCharacteristic<S extends WithUUID<typeof Service>>(api:
     _characteristic = _service.addCharacteristic(_characteristic);
   }
 
-  if (params.value!==undefined) {
+  if (params.value !== undefined) {
     _characteristic.setValue(params.value);
   } else if (params.nodeStorage && params.storageKey) {
     _characteristic.setValue(await params.nodeStorage.get(params.storageKey, params.storageDefaultValue));
@@ -407,16 +424,21 @@ export const setActiveFault = (api: API, service: Service, statusActive: boolean
 };
 
 export function logAccessory(accessory: PlatformAccessory, log: AnsiLogger) {
-  // eslint-disable-next-line max-len
-  log.debug(`Accessory ${id}${accessory.displayName}${rk}${rs}${db} UUID: ${accessory.UUID} AID: ${accessory._associatedHAPAccessory.aid} cat ${hk}${HapCategoryNames[accessory.category]}${db} ${accessory._associatedHAPAccessory.reachable ? wr + 'reachable' : er + 'not reachable'}${db} ${accessory._associatedHAPAccessory.bridged === true ? wr + 'bridged' + db + ' with ' + accessory._associatedHAPAccessory.bridge?._accessoryInfo?.displayName : 'not bridged'} `);
-  for (const service of accessory.services) {
+  log.debug(
     // eslint-disable-next-line max-len
-    log.debug(`==> ${zb}${service.constructor.name}${rs}${db} name ${hk}${service.name}${db} display ${hk}${service.displayName}${db} subtype ${hk}${service.subtype}${db} iid ${hk}${service.iid}${db} uuid ${hk}${service.UUID.slice(0, 8)}${db} ${service.isHiddenService === true ? `${wr}hidden${db}` : ''} ${service.isPrimaryService === true ? `${wr}primary${db}` : ''}`);
+    `Accessory ${id}${accessory.displayName}${rk}${rs}${db} UUID: ${accessory.UUID} AID: ${accessory._associatedHAPAccessory.aid} cat ${hk}${HapCategoryNames[accessory.category]}${db} ${accessory._associatedHAPAccessory.reachable ? wr + 'reachable' : er + 'not reachable'}${db} ${accessory._associatedHAPAccessory.bridged === true ? wr + 'bridged' + db + ' with ' + accessory._associatedHAPAccessory.bridge?._accessoryInfo?.displayName : 'not bridged'} `,
+  );
+  for (const service of accessory.services) {
+    log.debug(
+      // eslint-disable-next-line max-len
+      `==> ${zb}${service.constructor.name}${rs}${db} name ${hk}${service.name}${db} display ${hk}${service.displayName}${db} subtype ${hk}${service.subtype}${db} iid ${hk}${service.iid}${db} uuid ${hk}${service.UUID.slice(0, 8)}${db} ${service.isHiddenService === true ? `${wr}hidden${db}` : ''} ${service.isPrimaryService === true ? `${wr}primary${db}` : ''}`,
+    );
     for (const characteristic of service.characteristics) {
       const propsstring = debugStringify(characteristic.props);
-      // eslint-disable-next-line max-len
-      log.debug(`====> ${dn}${characteristic.constructor.name}-${characteristic.displayName}${db} value ${hk}${characteristic.value}${db} props ${hk}${propsstring}${db} iid ${hk}${characteristic.iid}${db} uuid ${hk}${characteristic.UUID.slice(0, 8)}${db}`);
+      log.debug(
+        // eslint-disable-next-line max-len
+        `====> ${dn}${characteristic.constructor.name}-${characteristic.displayName}${db} value ${hk}${characteristic.value}${db} props ${hk}${propsstring}${db} iid ${hk}${characteristic.iid}${db} uuid ${hk}${characteristic.UUID.slice(0, 8)}${db}`,
+      );
     }
   }
 }
-
