@@ -26,7 +26,11 @@
 ---
 - This plugin allows to expose the Somfy TaHoma stateless screens.
 The stateless screens don't show up in the TaHoma HomeKit bridge because they don't have a bidirectional radio. 
-This plugin resolve the problem counting the time of the screen movement (see Usage section).
+This plugin resolve the problem counting the time of the screen movement.
+
+For more details on how to use it, please refer to [this guide](https://github.com/Luligu/homebridge-somfy-tahoma-screen?tab=readme-ov-file#how-to-use-it).
+
+If you are interested in Matter, this plugin is also available in Matterbridge.
 
 ## Requirements
 
