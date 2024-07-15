@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.17] - 2024-07-15
+
+### Changed
+
+- [somfy]: Added support ExteriorBlindRTSComponent.
+
 ## [1.0.16] - 2024-04-23
 
 ### Added

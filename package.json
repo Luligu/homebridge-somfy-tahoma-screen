@@ -1,7 +1,7 @@
 {
   "displayName": "Somfy TaHoma Screen",
   "name": "homebridge-somfy-tahoma-screen",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "description": "Somfy TaHoma stateless screens plugin",
   "author": "https://github.com/Luligu",
   "license": "Apache-2.0",
@@ -38,7 +38,7 @@
     "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "prepublishOnly": "npm run lint && npm run cleanBuild",
     "checkDependencies": "npx npm-check-updates",
-    "updateDependencies": "npx npm-check-updates -u"
+    "updateDependencies": "npx npm-check-updates -u && npm install & npm run cleanBuild"
   },
   "keywords": [
     "homebridge-plugin",

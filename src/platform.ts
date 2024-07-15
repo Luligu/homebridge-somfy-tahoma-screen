@@ -119,15 +119,21 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
     this.log.info('TaHoma', devices.length, 'devices discovered');
 
     for (const device of devices) {
-      this.log.debug(`Device: ${device.label} uiClass ${device.definition.uiClass} serial ${device.serialNumber}`);
-      this.log.debug(`Commands for ${device.deviceURL}:`, JSON.stringify(device.commands));
-      if (device.uniqueName === 'Blind') {
+      this.log.debug(`Device: ${device.label}`);
+      this.log.debug(`- uniqueName ${device.uniqueName}`);
+      this.log.debug(`- uiClass ${device.definition.uiClass}`);
+      this.log.debug(`- serial ${device.serialNumber}`);
+      this.log.debug(`- deviceURL ${device.deviceURL}`);
+      this.log.debug(`- commands: ${JSON.stringify(device.commands)}`);
+      this.log.debug(`- states: ${JSON.stringify(device.states)}`);
+      const supportedUniqueNames = ['Blind', 'ExteriorBlindRTSComponent'];
+      if (supportedUniqueNames.includes(device.uniqueName)) {
         blindDevices.push(device);
       }
     }
     this.log.info('TaHoma', blindDevices.length, 'screens discovered');
     for (const device of blindDevices) {
-      this.log.debug(`Adding device: ${device.label} uiClass ${device.definition.uiClass} serial ${device.serialNumber}`);
+      this.log.debug(`Adding device: ${device.label} uniqueName ${device.uniqueName} uiClass ${device.definition.uiClass} serial ${device.serialNumber}`);
       const uuid = this.api.hap.uuid.generate(device.serialNumber + hostname);
       const existingAccessory = this.accessories.find((accessory) => accessory.UUID === uuid);
 
