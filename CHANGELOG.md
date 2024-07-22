@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.19] - 2024-07-22
+
+### Changed
+
+- [somfy]: Added support ExteriorVenetianBlindRTSComponent.
+- [homebridge]: Update Homebridge to v.1.8.4.
+- [dependencies]: Update dependencies and devDependencies.
+
+## [1.0.18] - 2024-07-17
+
+### Changed
+
+- [somfy]: Fix crash on ExteriorBlindRTSComponent.
+
 ## [1.0.17] - 2024-07-15
 
 ### Changed

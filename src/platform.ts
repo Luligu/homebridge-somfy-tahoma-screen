@@ -126,7 +126,7 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
       this.log.debug(`- deviceURL ${device.deviceURL}`);
       this.log.debug(`- commands: ${JSON.stringify(device.commands)}`);
       this.log.debug(`- states: ${JSON.stringify(device.states)}`);
-      const supportedUniqueNames = ['Blind', 'ExteriorBlindRTSComponent'];
+      const supportedUniqueNames = ['Blind', 'ExteriorBlindRTSComponent', 'ExteriorVenetianBlindRTSComponent'];
       if (supportedUniqueNames.includes(device.uniqueName)) {
         blindDevices.push(device);
       }
@@ -248,15 +248,27 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
       },
       onSetTargetPosition: async (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
         this.log.debug('onSetTargetPosition', device.label, (windowCoveringTargetPosition = value as number));
-        MoveToPosition(this.api, accessory.getService(Service.WindowCovering)!, windowCoveringTargetPosition, await deviceStorage.get<number>('TaHomaDuration', 26), (command) =>
-          this.sendCommand(command, device, true),
-        );
+        try {
+          MoveToPosition(
+            this.api,
+            accessory.getService(Service.WindowCovering)!,
+            windowCoveringTargetPosition,
+            await deviceStorage.get<number>('TaHomaDuration', 26),
+            async (command) => await this.sendCommand(command, device, true),
+          );
+        } catch (error) {
+          this.log.error('Error setting target position');
+        }
         callback(HAPStatus.SUCCESS);
       },
       onSetHoldPosition: (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
         this.log.debug('onSetHoldPosition', device.label);
         windowCoveringCurrentPosition = accessory.getService(Service.WindowCovering)!.getCharacteristic(Characteristic.CurrentPosition).value as number;
-        HoldPosition(this.api, accessory.getService(Service.WindowCovering)!, windowCoveringCurrentPosition, (command) => this.sendCommand(command, device, true));
+        try {
+          HoldPosition(this.api, accessory.getService(Service.WindowCovering)!, windowCoveringCurrentPosition, async (command) => await this.sendCommand(command, device, true));
+        } catch (error) {
+          this.log.error('Error setting hold position');
+        }
         callback(HAPStatus.SUCCESS);
       },
     });
@@ -313,13 +325,13 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
     //const windowCoveringHistory = new HapHistory(log, accessory, { enableAutopilot: true, enableConfigData: true, filePath: './persist' });
   }
 
-  sendCommand(command: string, device: Device, highPriority = false) {
+  async sendCommand(command: string, device: Device, highPriority = false) {
     this.log.debug(`*Sending command ${command} highPriority ${highPriority}`);
     try {
       const _command = new Command(command);
       const _action = new Action(device.deviceURL, [_command]);
       const _execution = new Execution('Sending ' + command, _action);
-      this.tahomaClient?.execute(highPriority ? 'apply/highPriority' : 'apply', _execution);
+      await this.tahomaClient?.execute(highPriority ? 'apply/highPriority' : 'apply', _execution);
     } catch (error) {
       this.log.error('Error sending command');
     }
