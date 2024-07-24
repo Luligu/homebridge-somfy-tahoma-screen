@@ -11,6 +11,10 @@ All notable changes to this project will be documented in this file.
 - [dependencies]: Update overkiz-client package to v.1.0.19.
 - [dependencies]: Update dependencies and devDependencies.
 
+<a href="https://www.buymeacoffee.com/luligugithub">
+  <img src="./yellow-button.png" alt="Buy me a coffee" width="120">
+</a>
+
 ## [1.0.19] - 2024-07-22
 
 ### Changed
