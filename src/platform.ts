@@ -19,7 +19,7 @@ import { Action, Client, Command, Device, Execution } from 'overkiz-client';
 import { hostname } from 'os';
 import { CharacteristicDefinition, HoldPosition, MoveToPosition, addCharacteristic, createServiceAccessoryInformation, createServiceWindowCovering } from './hapCustom.js';
 import { NodeStorageManager } from 'node-persist-manager';
-import { AnsiLogger, TimestampFormat } from 'node-ansi-logger';
+import { AnsiLogger, LogLevel, TimestampFormat } from 'node-ansi-logger';
 import path from 'path';
 
 // npm link --save node-persist-manager
@@ -47,6 +47,7 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
     this.log = new AnsiLogger({
       logName: 'Somfy TaHoma Screen',
       logTimestampFormat: TimestampFormat.TIME_MILLIS,
+      logLevel: this.config.debug === true ? LogLevel.DEBUG : LogLevel.INFO,
     });
 
     // create NodeStorageManager
@@ -126,7 +127,7 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
       this.log.debug(`- deviceURL ${device.deviceURL}`);
       this.log.debug(`- commands: ${JSON.stringify(device.commands)}`);
       this.log.debug(`- states: ${JSON.stringify(device.states)}`);
-      const supportedUniqueNames = ['Blind', 'ExteriorBlindRTSComponent', 'ExteriorVenetianBlindRTSComponent'];
+      const supportedUniqueNames = ['Blind', 'ExteriorBlindRTSComponent', 'ExteriorVenetianBlindRTSComponent', 'Shutter'];
       if (supportedUniqueNames.includes(device.uniqueName)) {
         blindDevices.push(device);
       }
@@ -326,7 +327,7 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
   }
 
   async sendCommand(command: string, device: Device, highPriority = false) {
-    this.log.debug(`*Sending command ${command} highPriority ${highPriority}`);
+    this.log.debug(`*Sending command ${command} highPriority ${highPriority} to ${device.label}`);
     try {
       const _command = new Command(command);
       const _action = new Action(device.deviceURL, [_command]);

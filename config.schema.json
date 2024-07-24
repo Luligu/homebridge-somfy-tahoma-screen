@@ -52,6 +52,12 @@
         "title": "TaHoma account password",
         "type": "string",
         "required": true
+      },
+      "debug": {
+        "title": "Plugin debug mode",
+        "type": "boolean",
+        "required": true,
+        "default": false
       }
     }
   }

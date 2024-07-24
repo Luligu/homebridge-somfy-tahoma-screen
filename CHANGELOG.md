@@ -2,11 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.20] - 2024-07-24
+
+### Changed
+
+- [somfy]: Added support for uniqueName = Shutter.
+- [plugin]: Added config debug option to enable debug log in the plugin (default false).
+- [dependencies]: Update overkiz-client package to v.1.0.19.
+- [dependencies]: Update dependencies and devDependencies.
+
 ## [1.0.19] - 2024-07-22
 
 ### Changed
 
-- [somfy]: Added support ExteriorVenetianBlindRTSComponent.
+- [somfy]: Added support for uniqueName = ExteriorVenetianBlindRTSComponent.
 - [homebridge]: Update Homebridge to v.1.8.4.
 - [dependencies]: Update dependencies and devDependencies.
 
@@ -20,7 +29,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- [somfy]: Added support ExteriorBlindRTSComponent.
+- [somfy]: Added support for uniqueName = ExteriorBlindRTSComponent.
 
 ## [1.0.16] - 2024-04-23
 
