@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.21] - 2024-08-01
+
+### Changed
+
+- [somfy]: Added support for uniqueName = BlindRTSComponent.
+
+<a href="https://www.buymeacoffee.com/luligugithub">
+  <img src="./yellow-button.png" alt="Buy me a coffee" width="120">
+</a>
+
 ## [1.0.20] - 2024-07-24
 
 ### Changed

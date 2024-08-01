@@ -1,7 +1,7 @@
 {
   "displayName": "Somfy TaHoma Screen",
   "name": "homebridge-somfy-tahoma-screen",
-  "version": "1.0.20",
+  "version": "1.0.21",
   "description": "Somfy TaHoma stateless screens plugin",
   "author": "https://github.com/Luligu",
   "license": "Apache-2.0",
@@ -54,12 +54,12 @@
     "Blind"
   ],
   "devDependencies": {
-    "@stylistic/eslint-plugin": "^2.3.0",
+    "@stylistic/eslint-plugin": "^2.6.0",
     "@tsconfig/node-lts": "^20.1.3",
-    "@types/node": "^20.14.12",
+    "@types/node": "^22.0.2",
     "@types/node-persist": "^3.1.8",
-    "@typescript-eslint/eslint-plugin": "^7.17.0",
-    "@typescript-eslint/parser": "^7.17.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "homebridge": "^1.8.4",
@@ -69,8 +69,8 @@
     "typescript": "^5.5.4"
   },
   "dependencies": {
-    "node-ansi-logger": "^2.0.3",
-    "node-persist-manager": "^1.0.7",
+    "node-ansi-logger": "^2.0.6",
+    "node-persist-manager": "^1.0.8",
     "overkiz-client": "^1.0.19"
   }
 }
