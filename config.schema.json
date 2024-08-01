@@ -19,27 +19,19 @@
         "oneOf": [
           {
             "title": "Local API (TaHoma / Switch)",
-            "enum": [
-              "local"
-            ]
+            "enum": ["local"]
           },
           {
             "title": "Somfy Europe (TaHoma / Switch / Connexoon IO)",
-            "enum": [
-              "somfy_europe"
-            ]
+            "enum": ["somfy_europe"]
           },
           {
             "title": "Somfy Australia (Connexoon RTS)",
-            "enum": [
-              "somfy_australia"
-            ]
+            "enum": ["somfy_australia"]
           },
           {
             "title": "Somfy North America",
-            "enum": [
-              "somfy_north_america"
-            ]
+            "enum": ["somfy_north_america"]
           }
         ]
       },

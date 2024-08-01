@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   API,
   DynamicPlatformPlugin,
@@ -21,10 +22,6 @@ import { CharacteristicDefinition, HoldPosition, MoveToPosition, addCharacterist
 import { NodeStorageManager } from 'node-persist-manager';
 import { AnsiLogger, LogLevel, TimestampFormat } from 'node-ansi-logger';
 import path from 'path';
-
-// npm link --save node-persist-manager
-// npm link --save node-ansi-logger
-// ![verified-by-homebridge](https://img.shields.io/badge/homebridge-verified-blueviolet?color=%23491F59&style=for-the-badge&logoColor=%23FFFFFF&logo=homebridge)
 
 export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
   public readonly accessories: PlatformAccessory[] = [];
@@ -80,9 +77,9 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
     this.api.on('didFinishLaunching', () => {
       this.log.debug('Executed didFinishLaunching callback');
 
-      //this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, this.accessories);
+      // this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, this.accessories);
       setTimeout(async () => {
-        //this.accessories.splice(0);
+        // this.accessories.splice(0);
         await this.discoverDevices();
       }, 1000);
     });
@@ -154,7 +151,7 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
     }
   }
 
-  //const api = typeof import('c:/Users/lligu/OneDrive/GitHub/homebridge-somfy-tahoma-screen/node_modules/hap-nodejs/dist/index');
+  // const api = typeof import('c:/Users/lligu/OneDrive/GitHub/homebridge-somfy-tahoma-screen/node_modules/hap-nodejs/dist/index');
 
   async setupAccessory(platformAccessory: PlatformAccessory, device: Device) {
     const Service = this.api.hap.Service;
@@ -323,9 +320,9 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
         await deviceStorage.set<number>('TaHomaDuration', value as number);
       },
     });
-    //logAccessory(accessory, this.log);
+    // logAccessory(accessory, this.log);
 
-    //const windowCoveringHistory = new HapHistory(log, accessory, { enableAutopilot: true, enableConfigData: true, filePath: './persist' });
+    // const windowCoveringHistory = new HapHistory(log, accessory, { enableAutopilot: true, enableConfigData: true, filePath: './persist' });
   }
 
   async sendCommand(command: string, device: Device, highPriority = false) {

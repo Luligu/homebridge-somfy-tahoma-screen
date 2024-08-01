@@ -24,9 +24,10 @@
 [![powered by](https://img.shields.io/badge/powered%20by-node--persist--manager-blue)](https://www.npmjs.com/package/node-persist-manager)
 
 ---
+
 - This plugin allows to expose the Somfy TaHoma stateless screens.
-The stateless screens don't show up in the TaHoma HomeKit bridge because they don't have a bidirectional radio. 
-This plugin resolve the problem counting the time of the screen movement.
+  The stateless screens don't show up in the TaHoma HomeKit bridge because they don't have a bidirectional radio.
+  This plugin resolve the problem counting the time of the screen movement.
 
 For more details on how to use it, please refer to [How to use it](https://github.com/Luligu/homebridge-somfy-tahoma-screen?tab=readme-ov-file#how-to-use-it).
 
@@ -38,14 +39,16 @@ If you are interested in [Matter protocol](https://csa-iot.org/all-solutions/mat
 
 ## How to use it
 
-- Using the Eve app or any of the HomeKit enabled apps that show custom characteristics set for all the screens in your 
-setup the duration in seconds of the full movement (from full closed to full opened) and the duration of movement from 
-full close to MY position. The plugin will use this data to determine the actual position of the screen.
+- Using the Eve app or any of the HomeKit enabled apps that show custom characteristics set for all the screens in your
+  setup the duration in seconds of the full movement (from full closed to full opened) and the duration of movement from
+  full close to MY position. The plugin will use this data to determine the actual position of the screen.
 
 - You can then ask Siri
+
 ```
 Siri open the Living room blind
 Siri close the Living room blind
 Siri set the Living room blind to 70%
 ```
+
 ---

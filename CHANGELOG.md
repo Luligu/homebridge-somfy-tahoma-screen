@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.22] - 2024-08-01
+
+### Changed
+
+- [package]: Update to eslint, jest and prettier flat config.
+
+<a href="https://www.buymeacoffee.com/luligugithub">
+  <img src="./yellow-button.png" alt="Buy me a coffee" width="120">
+</a>
+
 ## [1.0.21] - 2024-08-01
 
 ### Changed

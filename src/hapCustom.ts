@@ -277,8 +277,14 @@ export const createServiceWindowCovering = async (api: API, accessory: PlatformA
   );
   const service = accessory.getService(Service.WindowCovering) || accessory.addService(new Service.WindowCovering(displayName));
   setName(api, service, displayName);
-  service.setCharacteristic(Characteristic.CurrentPosition, params.nodeStorage ? await params.nodeStorage.get<number>('currentPosition', params.currentPosition) : params.currentPosition);
-  service.setCharacteristic(Characteristic.TargetPosition, params.nodeStorage ? await params.nodeStorage.get<number>('targetPosition', params.targetPosition) : params.targetPosition);
+  service.setCharacteristic(
+    Characteristic.CurrentPosition,
+    params.nodeStorage ? await params.nodeStorage.get<number>('currentPosition', params.currentPosition) : params.currentPosition,
+  );
+  service.setCharacteristic(
+    Characteristic.TargetPosition,
+    params.nodeStorage ? await params.nodeStorage.get<number>('targetPosition', params.targetPosition) : params.targetPosition,
+  );
   service.setCharacteristic(Characteristic.PositionState, params.nodeStorage ? await params.nodeStorage.get<number>('positionState', params.positionState) : params.positionState);
   if (params.obstructionDetected !== undefined) {
     service.setCharacteristic(
