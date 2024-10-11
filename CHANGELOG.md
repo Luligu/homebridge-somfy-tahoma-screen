@@ -14,10 +14,6 @@ All notable changes to this project will be documented in this file.
 - [somfy]: Added support for uniqueName = PergolaHorizontalUnoIOComponent.
 - [somfy]: Added support for uniqueName = Awning.
 
-### Changed
-
-- [package]: Update to eslint, jest and prettier flat config.
-
 <a href="https://www.buymeacoffee.com/luligugithub">
   <img src="./yellow-button.png" alt="Buy me a coffee" width="120">
 </a>
