@@ -124,7 +124,17 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
       this.log.debug(`- deviceURL ${device.deviceURL}`);
       this.log.debug(`- commands: ${JSON.stringify(device.commands)}`);
       this.log.debug(`- states: ${JSON.stringify(device.states)}`);
-      const supportedUniqueNames = ['Blind', 'BlindRTSComponent', 'ExteriorBlindRTSComponent', 'ExteriorVenetianBlindRTSComponent', 'Shutter'];
+      const supportedUniqueNames = [
+        'Blind',
+        'BlindRTSComponent',
+        'ExteriorBlindRTSComponent',
+        'ExteriorVenetianBlindRTSComponent',
+        'Shutter',
+        'RollerShutterRTSComponent',
+        'HorizontalAwningRTSComponent',
+        'PergolaHorizontalUnoIOComponent',
+        'Awning',
+      ];
       if (supportedUniqueNames.includes(device.uniqueName)) {
         blindDevices.push(device);
       }
@@ -326,15 +336,17 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
   }
 
   async sendCommand(command: string, device: Device, highPriority = false) {
+    if (command === 'open' && !device.commands.includes('open') && device.commands.includes('rollUp')) command = 'rollUp';
+    if (command === 'close' && !device.commands.includes('close') && device.commands.includes('rollOut')) command = 'rollOut';
+
     this.log.debug(`*Sending command ${command} highPriority ${highPriority} to ${device.label}`);
     try {
       const _command = new Command(command);
       const _action = new Action(device.deviceURL, [_command]);
       const _execution = new Execution('Sending ' + command, _action);
       await this.tahomaClient?.execute(highPriority ? 'apply/highPriority' : 'apply', _execution);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      this.log.error('Error sending command');
+      this.log.error(`Error sending command error: ${error instanceof Error ? error.message : error}`);
     }
   }
 }

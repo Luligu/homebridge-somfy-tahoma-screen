@@ -4,7 +4,7 @@
  * @file hapCustom.ts
  * @author Luca Liguori
  * @date 2023-11-13
- * @version 1.0.8
+ * @version 1.0.9
  *
  * All rights reserved.
  *
@@ -31,7 +31,7 @@ import * as crypto from 'crypto';
 import { AnsiLogger, debugStringify, db, dn, er, hk, id, rk, rs, wr, zb } from 'node-ansi-logger';
 import { NodeStorage, NodeStorageKey } from 'node-persist-manager';
 
-export const HapCategoryNames: { [key: number]: string } = {
+export const HapCategoryNames: Record<number, string> = {
   [Categories.OTHER]: 'OTHER',
   [Categories.BRIDGE]: 'BRIDGE',
   [Categories.FAN]: 'FAN',
@@ -110,10 +110,10 @@ export const createServiceAccessoryInformation = (api: API, accessory: PlatformA
       manufacturer: 'Hap Manufacturer',
       serialNumber: crypto.randomBytes(8).toString('hex'),
       firmwareRevision: '1.0.0',
-      hardwareRevision: undefined, //'1.0.0',
-      softwareRevision: undefined, //'1.0.0',
-      statusActive: undefined, //true,
-      statusFault: undefined, //Characteristic.StatusFault.NO_FAULT,
+      hardwareRevision: undefined, // '1.0.0',
+      softwareRevision: undefined, // '1.0.0',
+      statusActive: undefined, // true,
+      statusFault: undefined, // Characteristic.StatusFault.NO_FAULT,
       hidden: undefined,
       primary: undefined,
       onSetIdentify: undefined,
@@ -123,9 +123,9 @@ export const createServiceAccessoryInformation = (api: API, accessory: PlatformA
   );
   const service = accessory.getService(Service.AccessoryInformation) || accessory.addService(new Service.AccessoryInformation(displayName));
   setName(api, service, displayName);
-  service.setCharacteristic(Characteristic.Model, params.model!);
-  service.setCharacteristic(Characteristic.Manufacturer, params.manufacturer!);
-  service.setCharacteristic(Characteristic.SerialNumber, params.serialNumber!);
+  service.setCharacteristic(Characteristic.Model, params.model || 'Hap Model');
+  service.setCharacteristic(Characteristic.Manufacturer, params.manufacturer || 'Hap Manufacturer');
+  service.setCharacteristic(Characteristic.SerialNumber, params.serialNumber || crypto.randomBytes(8).toString('hex'));
   if (params.firmwareRevision) {
     service.setCharacteristic(Characteristic.FirmwareRevision, params.firmwareRevision);
   }
@@ -235,8 +235,8 @@ export function HoldPosition(api: API, service: Service, currentPosition: number
 }
 
 export interface BaseServiceParams {
-  statusActive?: boolean; //true,
-  statusFault?: number; //Characteristic.StatusFault.NO_FAULT,
+  statusActive?: boolean; // true,
+  statusFault?: number; // Characteristic.StatusFault.NO_FAULT,
   hidden?: boolean;
   primary?: boolean;
   nodeStorage?: NodeStorage;
@@ -264,8 +264,8 @@ export const createServiceWindowCovering = async (api: API, accessory: PlatformA
       positionState: Characteristic.PositionState.STOPPED, // read
       obstructionDetected: undefined, // boolean
       holdPosition: undefined, // boolean write
-      statusActive: undefined, //true,
-      statusFault: undefined, //Characteristic.StatusFault.NO_FAULT,
+      statusActive: undefined, // true,
+      statusFault: undefined, // Characteristic.StatusFault.NO_FAULT,
       hidden: undefined,
       primary: undefined,
       onChangeCurrentPosition: undefined,
@@ -339,7 +339,7 @@ export async function addCharacteristic<S extends WithUUID<typeof Service>>(
   characteristic: CharacteristicDefinition,
   params: AddCharacteristicParams,
 ) {
-  //console.log(characteristic);
+  // console.log(characteristic);
   const _service = accessory.getService(service);
   if (!_service) {
     return;
@@ -431,18 +431,15 @@ export const setActiveFault = (api: API, service: Service, statusActive: boolean
 
 export function logAccessory(accessory: PlatformAccessory, log: AnsiLogger) {
   log.debug(
-    // eslint-disable-next-line max-len
     `Accessory ${id}${accessory.displayName}${rk}${rs}${db} UUID: ${accessory.UUID} AID: ${accessory._associatedHAPAccessory.aid} cat ${hk}${HapCategoryNames[accessory.category]}${db} ${accessory._associatedHAPAccessory.reachable ? wr + 'reachable' : er + 'not reachable'}${db} ${accessory._associatedHAPAccessory.bridged === true ? wr + 'bridged' + db + ' with ' + accessory._associatedHAPAccessory.bridge?._accessoryInfo?.displayName : 'not bridged'} `,
   );
   for (const service of accessory.services) {
     log.debug(
-      // eslint-disable-next-line max-len
       `==> ${zb}${service.constructor.name}${rs}${db} name ${hk}${service.name}${db} display ${hk}${service.displayName}${db} subtype ${hk}${service.subtype}${db} iid ${hk}${service.iid}${db} uuid ${hk}${service.UUID.slice(0, 8)}${db} ${service.isHiddenService === true ? `${wr}hidden${db}` : ''} ${service.isPrimaryService === true ? `${wr}primary${db}` : ''}`,
     );
     for (const characteristic of service.characteristics) {
       const propsstring = debugStringify(characteristic.props);
       log.debug(
-        // eslint-disable-next-line max-len
         `====> ${dn}${characteristic.constructor.name}-${characteristic.displayName}${db} value ${hk}${characteristic.value}${db} props ${hk}${propsstring}${db} iid ${hk}${characteristic.iid}${db} uuid ${hk}${characteristic.UUID.slice(0, 8)}${db}`,
       );
     }

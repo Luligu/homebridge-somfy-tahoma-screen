@@ -1,7 +1,7 @@
 {
   "displayName": "Somfy TaHoma Screen",
   "name": "homebridge-somfy-tahoma-screen",
-  "version": "1.0.22",
+  "version": "1.1.0",
   "description": "Somfy TaHoma stateless screens plugin",
   "author": "https://github.com/Luligu",
   "license": "Apache-2.0",
@@ -22,7 +22,7 @@
   "types": "dist/index.d.js",
   "engines": {
     "node": ">=18.0.0",
-    "homebridge": "^1.8.0"
+    "homebridge": "^1.8.0 || ^2.0.0-beta.0"
   },
   "scripts": {
     "start": "homebridge -I -D",
@@ -59,25 +59,25 @@
     "Blind"
   ],
   "dependencies": {
-    "node-ansi-logger": "^2.0.6",
+    "node-ansi-logger": "^3.0.0",
     "node-persist-manager": "^1.0.8",
     "overkiz-client": "^1.0.19"
   },
   "devDependencies": {
-    "@eslint/js": "^9.8.0",
+    "@eslint/js": "^9.12.0",
     "@types/eslint__js": "^8.42.3",
-    "@types/jest": "^29.5.12",
-    "@types/node": "^22.0.2",
+    "@types/jest": "^29.5.13",
+    "@types/node": "^22.7.5",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-jest": "^28.6.0",
+    "eslint-plugin-jest": "^28.8.3",
     "eslint-plugin-prettier": "^5.2.1",
     "homebridge": "^1.8.4",
     "jest": "^29.7.0",
-    "nodemon": "^3.1.4",
+    "nodemon": "^3.1.7",
     "prettier": "^3.3.3",
     "rimraf": "^6.0.1",
-    "ts-jest": "^29.2.3",
-    "typescript": "^5.5.4",
-    "typescript-eslint": "^8.0.0"
+    "ts-jest": "^29.2.5",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.8.1"
   }
 }

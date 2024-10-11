@@ -1,6 +1,26 @@
 # Changelog
 
+If you like this project and find it useful, please consider giving it a star on GitHub at https://github.com/Luligu/matterbridge-zigbee2mqtt and sponsoring it.
+
 All notable changes to this project will be documented in this file.
+
+## [1.1.0] - 2024-10-11
+
+### Added
+
+- [homebridge]: Added support for homebridge v2 (https://github.com/homebridge/homebridge/wiki/Updating-To-Homebridge-v2.0).
+- [somfy]: Added support for uniqueName = RollerShutterRTSComponent.
+- [somfy]: Added support for uniqueName = HorizontalAwningRTSComponent.
+- [somfy]: Added support for uniqueName = PergolaHorizontalUnoIOComponent.
+- [somfy]: Added support for uniqueName = Awning.
+
+### Changed
+
+- [package]: Update to eslint, jest and prettier flat config.
+
+<a href="https://www.buymeacoffee.com/luligugithub">
+  <img src="./yellow-button.png" alt="Buy me a coffee" width="120">
+</a>
 
 ## [1.0.22] - 2024-08-01
 
