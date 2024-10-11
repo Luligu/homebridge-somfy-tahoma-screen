@@ -149,3 +149,7 @@ __test__
 .prettierrc.json
 
 Screenshot.png
+prettier.config.js
+jest.config.js
+eslint.config.js
+.gitattributes
