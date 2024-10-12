@@ -4,6 +4,16 @@ If you like this project and find it useful, please consider giving it a star on
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.2] - 2024-10-12
+
+### Fixed
+
+- [somfy]: Fixed the commands "rollOut", "rollUp" for Awning.
+
+<a href="https://www.buymeacoffee.com/luligugithub">
+  <img src="./yellow-button.png" alt="Buy me a coffee" width="120">
+</a>
+
 ## [1.1.1] - 2024-10-12
 
 ### Added
