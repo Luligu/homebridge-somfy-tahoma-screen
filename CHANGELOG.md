@@ -1,8 +1,21 @@
 # Changelog
 
-If you like this project and find it useful, please consider giving it a star on GitHub at https://github.com/Luligu/matterbridge-zigbee2mqtt and sponsoring it.
+If you like this project and find it useful, please consider giving it a star on GitHub at https://github.com/Luligu/homebridge-somfy-tahoma-screen and sponsoring it.
 
 All notable changes to this project will be documented in this file.
+
+## [1.1.1] - 2024-10-12
+
+### Added
+
+- [somfy]: Blinds are now added also for their uiClass.
+- [somfy]: Blinds are now added also if they support the command "open", "close" and "stop".
+- [somfy]: Blinds are now added also if they support the command "rollOut", "rollUp" and "stop".
+- [somfy]: Blinds are now added also if they support the command "down", "up" and "stop".
+
+<a href="https://www.buymeacoffee.com/luligugithub">
+  <img src="./yellow-button.png" alt="Buy me a coffee" width="120">
+</a>
 
 ## [1.1.0] - 2024-10-11
 

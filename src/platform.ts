@@ -43,7 +43,7 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
     // create AnsiLogger
     this.log = new AnsiLogger({
       logName: 'Somfy TaHoma Screen',
-      logTimestampFormat: TimestampFormat.TIME_MILLIS,
+      logTimestampFormat: TimestampFormat.HOMEBRIDGE,
       logLevel: this.config.debug === true ? LogLevel.DEBUG : LogLevel.INFO,
     });
 
@@ -134,9 +134,24 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
         'HorizontalAwningRTSComponent',
         'PergolaHorizontalUnoIOComponent',
         'Awning',
+        'TiltOnlyVenetianBlindRTSComponent',
       ];
+      const supportedUiClasses = ['Screen', 'ExteriorScreen', 'Shutter', 'RollerShutter', 'VenetianBlind', 'ExteriorVenetianBlind', 'Awning', 'Pergola'];
       if (supportedUniqueNames.includes(device.uniqueName)) {
         blindDevices.push(device);
+        this.log.debug(`- added with uniqueName`);
+      } else if (supportedUiClasses.includes(device.definition.uiClass)) {
+        blindDevices.push(device);
+        this.log.debug(`- added with uiClass`);
+      } else if (device.commands.includes('open') && device.commands.includes('close') && device.commands.includes('stop')) {
+        blindDevices.push(device);
+        this.log.debug(`- added with commands "open", "close" and "stop"`);
+      } else if (device.commands.includes('rollOut') && device.commands.includes('rollUp') && device.commands.includes('stop')) {
+        blindDevices.push(device);
+        this.log.debug(`- added with commands "rollOut", "rollUp" and "stop"`);
+      } else if (device.commands.includes('down') && device.commands.includes('up') && device.commands.includes('stop')) {
+        blindDevices.push(device);
+        this.log.debug(`- added with commands "down", "up" and "stop"`);
       }
     }
     this.log.info('TaHoma', blindDevices.length, 'screens discovered');
@@ -338,6 +353,9 @@ export class SomfyTaHomaBridgePlatform implements DynamicPlatformPlugin {
   async sendCommand(command: string, device: Device, highPriority = false) {
     if (command === 'open' && !device.commands.includes('open') && device.commands.includes('rollUp')) command = 'rollUp';
     if (command === 'close' && !device.commands.includes('close') && device.commands.includes('rollOut')) command = 'rollOut';
+
+    if (command === 'open' && !device.commands.includes('open') && device.commands.includes('up')) command = 'up';
+    if (command === 'close' && !device.commands.includes('close') && device.commands.includes('down')) command = 'down';
 
     this.log.debug(`*Sending command ${command} highPriority ${highPriority} to ${device.label}`);
     try {

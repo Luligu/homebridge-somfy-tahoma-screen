@@ -153,3 +153,4 @@ prettier.config.js
 jest.config.js
 eslint.config.js
 .gitattributes
+CODEOWNERS
